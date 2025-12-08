@@ -1,0 +1,479 @@
+<html>
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<link rel="shortcut icon" href="images/icon.ico">
+<style type="text/css">
+  * {
+    box-sizing: border-box;
+  }
+
+	body {
+		background: radial-gradient(circle at top left, #4DA167 0%, #4E6E5D 30%, #4D5057 100%);
+		color: #CFCFCF;
+		margin: 0;
+		padding: 40px 0;
+		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+	}
+
+	/* Hide both math displays initially, will display based on JS detection */
+  .mathjax-mobile, .mathml-non-mobile { display: none; }
+
+  /* Show the MathML content by default on non-mobile devices */
+  .show-mathml .mathml-non-mobile { display: block; }
+  .show-mathjax .mathjax-mobile { display: block; }
+
+	.content-margin-container {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: flex-start;
+		margin-bottom: 32px;
+	}
+
+	.main-content-block {
+		width: 70%;
+    max-width: 1100px;
+		background-color: rgba(13, 16, 23, 0.96);
+		border-radius: 18px;
+		padding: 24px 32px;
+		border: 1px solid rgba(207,207,207,0.25);
+		box-shadow:
+			0 18px 40px rgba(0,0,0,0.55),
+			0 0 0 1px rgba(77,80,87,0.5);
+		backdrop-filter: blur(18px);
+		color: #E6E6E6;
+	}
+
+	.margin-left-block {
+		font-size: 14px;
+		width: 15%;
+		max-width: 130px;
+		position: relative;
+		margin-left: 10px;
+		text-align: left;
+		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+		padding: 5px;
+		color: #CFCFCF;
+	}
+
+	.margin-right-block {
+		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+		font-size: 14px;
+		width: 25%;
+		max-width: 256px;
+		position: relative;
+		text-align: left;
+		padding: 10px;
+		color: #CFCFCF;
+	}
+
+	img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: auto;
+		border-radius: 14px;
+		box-shadow: 0 0 0 rgba(0,0,0,0);
+		transform: translateY(0) scale(1);
+		transition:
+			transform 280ms ease,
+			box-shadow 280ms ease,
+			filter 280ms ease;
+	}
+
+	.my-video {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: auto;
+		border-radius: 18px;
+		box-shadow: 0 0 0 rgba(0,0,0,0);
+		transform: translateY(0) scale(1);
+		transition:
+			transform 280ms ease,
+			box-shadow 280ms ease,
+			filter 280ms ease;
+	}
+
+  /* Hide both video displays initially, will display based on JS detection */
+  .vid-mobile, .vid-non-mobile { display: none; }
+
+  /* Show the video content by default on non-mobile devices */
+  .show-vid-mobile .vid-mobile { display: block; }
+  .show-vid-non-mobile .vid-non-mobile { display: block; }
+
+	/* Image & video hover: deep “shadow in the background” */
+	img:hover,
+	.my-video:hover {
+		transform: translateY(-6px) scale(1.02);
+		box-shadow:
+			0 30px 80px rgba(0, 0, 0, 0.85),
+			0 0 0 1px rgba(207,207,207,0.25);
+		filter: drop-shadow(0 24px 60px rgba(61, 247, 114, 0.45));
+	}
+
+	a:link,
+	a:visited {
+		color: #3BC14A;
+		text-decoration: none;
+		font-weight: 500;
+		transition: color 180ms ease, text-shadow 180ms ease;
+	}
+
+	a:hover {
+		color: #4DA167;
+		text-shadow: 0 0 12px rgba(59,193,74,0.7);
+	}
+
+	h1 {
+		font-size: 24px;
+		margin-top: 4px;
+		margin-bottom: 14px;
+		color: #FFFFFF;
+		letter-spacing: 0.02em;
+	}
+
+	table.header {
+		font-weight: 400;
+		font-size: 18px;
+		flex-grow: 1;
+		width: 100%;
+		max-width: 100%;
+		color: #FFFFFF;
+	}
+
+	.paper-title {
+		display: block;
+		font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+		font-size: 32px;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		color: #FFFFFF;
+		margin-bottom: 18px; /* controls space above author names */
+		}
+
+	.paper-authors {
+		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+		font-size: 17px;
+		font-weight: 400;
+		color: #CFCFCF;
+	}
+
+	.paper-subtitle {
+		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+		font-size: 16px;
+		color: #A8B0BA;
+		padding-top: 8px;
+	}
+
+	table td, table td * {
+	    vertical-align: middle;
+	    position: relative;
+	}
+
+	table.paper-code-tab {
+	    flex-shrink: 0;
+	    margin-left: 8px;
+	    margin-top: 8px;
+	    padding: 0px 0px 0px 8px;
+	    width: 290px;
+	    height: 150px;
+	}
+
+	.layered-paper { /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
+		box-shadow:
+		        0px 0px 1px 1px rgba(0,0,0,0.35),
+		        5px 5px 0 0px #0D1017,
+		        5px 5px 1px 1px rgba(0,0,0,0.35),
+		        10px 10px 0 0px #0D1017,
+		        10px 10px 1px 1px rgba(0,0,0,0.35);
+		margin-top: 5px;
+		margin-left: 10px;
+		margin-right: 30px;
+		margin-bottom: 5px;
+		border-radius: 16px;
+	}
+
+	hr {
+    height: 1px;
+    border: none;
+    background: linear-gradient(to right, rgba(77,80,87,0), rgba(207,207,207,0.7), rgba(77,80,87,0));
+  }
+
+	div.hypothesis {
+		width: 80%;
+		background: linear-gradient(135deg, #4E6E5D 0%, #4DA167 100%);
+		border: 1px solid rgba(207,207,207,0.6);
+		border-radius: 16px;
+		font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", Courier, monospace;
+		font-size: 18px;
+		text-align: center;
+		margin: auto;
+		padding: 16px 16px 16px 16px;
+		color: #0D1017;
+		box-shadow: 0 14px 40px rgba(0,0,0,0.5);
+	}
+
+	div.citation {
+    font-size: 0.9em;
+    background-color:#141820;
+    padding: 14px;
+		height: 200px;
+		border-radius: 12px;
+		border: 1px solid rgba(207,207,207,0.2);
+  }
+
+	.fade-in-inline {
+		position: absolute;
+		text-align: center;
+		margin: auto;
+		-webkit-mask-image: linear-gradient(to right,
+																			transparent 0%,
+																			transparent 40%,
+																			black 50%,
+																			black 90%,
+																			transparent 100%);
+		mask-image: linear-gradient(to right,
+																transparent 0%,
+																transparent 40%,
+																black 50%,
+																black 90%,
+																transparent 100%);
+		-webkit-mask-size: 8000% 100%;
+		mask-size: 8000% 100%;
+		animation-name: sweepMask;
+		animation-duration: 4s;
+		animation-iteration-count: infinite;
+		animation-timing-function: linear;
+		animation-delay: -1s;
+	}
+
+	.fade-in2-inline {
+			animation-delay: 1s;
+	}
+
+	.inline-div {
+			position: relative;
+	    display: inline-block;
+	    vertical-align: top;
+	    width: 50px;
+	}
+
+	@keyframes sweepMask {
+		0% { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+		100% { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+	}
+
+	/* Animated button styles */
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 10px 20px;
+		border-radius: 999px;
+		border: 1px solid rgba(207,207,207,0.5);
+		background: radial-gradient(circle at top left, #4DA167, #3BC14A);
+		color: #0D1017;
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		cursor: pointer;
+		box-shadow:
+			0 10px 25px rgba(0,0,0,0.6),
+			0 0 0 1px rgba(0,0,0,0.9);
+		position: relative;
+		overflow: hidden;
+		transition:
+			transform 160ms ease,
+			box-shadow 160ms ease,
+			background 200ms ease,
+			border-color 160ms ease;
+	}
+
+	.btn:hover {
+		transform: translateY(-2px) scale(1.02);
+		box-shadow:
+			0 18px 40px rgba(0,0,0,0.8),
+			0 0 0 1px rgba(207,207,207,0.8);
+		background: radial-gradient(circle at top left, #4E6E5D, #4DA167);
+		border-color: #CFCFCF;
+	}
+
+	.btn:active {
+		transform: translateY(1px) scale(0.98);
+		box-shadow:
+			0 8px 18px rgba(0,0,0,0.9),
+			0 0 0 1px rgba(207,207,207,0.6);
+	}
+
+	.btn::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, transparent 60%);
+		opacity: 0;
+		transform: scale(0);
+		transition: opacity 260ms ease, transform 260ms ease;
+		pointer-events: none;
+		mix-blend-mode: screen;
+	}
+
+	.btn:active::after {
+		opacity: 1;
+		transform: scale(1.6);
+	}
+</style>
+
+	  <title>The Platonic Representation Hypothesis</title>
+      <meta property="og:title" content="The Platonic Representation Hypothesis" />
+			<meta charset="UTF-8">
+  </head>
+
+  <body>
+
+		<div class="content-margin-container">
+				<div class="margin-left-block">
+				</div>
+		    <div class="main-content-block">
+						<table class="header" align="left">
+							<tr>
+								<td colspan="4">
+								<span class="paper-title">
+									Music-Theory-Informed Loss for Polyphonic MIDI Generation with Transformer Diffusion Models
+								</span>
+								</td>
+							</tr>
+							<tr>
+								<td align="left" colspan="4" class="paper-authors">
+								<a href="https://github.com/mihikadusad">Mihika Dusad</a>
+								&nbsp;&nbsp;·&nbsp;&nbsp;
+								<a href="https://github.com/victoriaxhu">Victoria Hu</a>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4" align="left">
+								<span class="paper-subtitle">Final project for 6.7960, MIT</span>
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div class="margin-right-block">
+					</div>
+		</div>
+
+		<div class="content-margin-container" id="intro">
+				<div class="margin-left-block">
+          <!-- table of contents here -->
+          <div style="position:fixed; max-width:inherit; top:max(20%,120px)">
+              <b style="font-size:16px">Outline</b><br><br>
+              <a href="#intro">Introduction</a><br><br>
+              <a href="#does_x_do_y">Does X do Y?</a><br><br>
+              <a href="#implications_and_limitations">Implications and limitations</a><br><br>
+          </div>
+				</div>
+		    <div class="main-content-block">
+            <!--You can embed an image like this:-->
+            <img src="./images/your_image_here.png" width=512px/>
+		    </div>
+		    <div class="margin-right-block">
+						Caption for the image.
+		    </div>
+		</div>
+
+    <div class="content-margin-container" id="intro">
+				<div class="margin-left-block">
+				</div>
+		    <div class="main-content-block">
+						<h1>Introduction</h1>
+            Motivate your project. What question are you asking. Why is it unanswered so far? What gap in the literature or practice are you filling?
+            Why is it important?
+		    </div>
+		    <div class="margin-right-block">
+						Margin note that clarifies some detail #main-content-block for intro section.
+		    </div>
+		</div>
+
+		<div class="content-margin-container" id="does_x_do_y">
+				<div class="margin-left-block">
+				</div>
+		    <div class="main-content-block">
+					<h1>Does X do Y?</h1>
+				  It is well known that Y does Y. And this has raised the question does X do Y? Because if Y does Y then it stands to reason that X does Y.
+          But we cannot answer this until we realize the Z implies Y and X can be linked to Z.<br><br>
+
+          Now let's write some math!<br>
+          <center>
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <mrow>
+                <mrow>
+                  <mo>&#x2202;</mo>
+                  <mi>y</mi>
+                </mrow>
+                <mo>/</mo>
+                <mrow>
+                  <mo>&#x2202;</mo>
+                  <mi>x</mi>
+                </mrow>
+              </mrow>
+              <mo>=</mo>
+              <mi>x</mi>
+            </math>
+          </center>
+          <br>
+          It's probably best to ask an LLM to help do the web
+          formatting for math. You can tell it "convert this latex equation into MathML: $$\frac{\partial dy}{\partial dx} = x$$"
+          But it took me a few tries. So, if you get frustrated, you can embed an image of the equation, or use other packages for
+          rendering equations on webpages.
+		    </div>
+		    <div class="margin-right-block" style="transform: translate(0%, -100%);"> <!-- you can move the margin notes up and down with translate -->
+          Interestingly, Plato also asked if X does Y, in <a href="#ref_1">[1]</a>.
+		    </div>
+		</div>
+
+		<div class="content-margin-container">
+				<div class="margin-left-block">
+				</div>
+		    <div class="main-content-block">
+            <h1>Another section</h1>
+            In this section we embed a video:
+						<video class='my-video' loop autoplay muted style="width: 725px">
+								<source src="./images/mtsh.mp4" type="video/mp4">
+						</video>
+		    </div>
+		    <div class="margin-right-block">
+					A caption for the video could go here.
+		    </div>
+		</div>
+
+		<div class="content-margin-container" id="implications_and_limitations">
+				<div class="margin-left-block">
+				</div>
+		    <div class="main-content-block">
+						<h1>Implications and limitations</h1>
+						Let's end with some discussion of the implications and limitations.
+		    </div>
+		    <div class="margin-right-block">
+		    </div>
+		</div>
+
+		<div class="content-margin-container" id="citations">
+				<div class="margin-left-block">
+				</div>
+		    <div class="main-content-block">
+						<div class='citation' id="references" style="height:auto"><br>
+							<span style="font-size:16px">References:</span><br><br>
+							<a id="ref_1"></a>[1] <a href="https://en.wikipedia.org/wiki/Allegory_of_the_cave">Allegory of the Cave</a>, Plato, c. 375 BC<br><br>
+							<a id="ref_2"></a>[2] <a href="">A Human-Level AGI</a>, OpenAI, 2025<br><br>
+						</div>
+		    </div>
+		    <div class="margin-right-block">
+            <!-- margin notes for reference block here -->
+		    </div>
+		</div>
+
+	</body>
+
+</html>
