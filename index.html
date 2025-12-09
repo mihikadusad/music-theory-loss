@@ -10,7 +10,7 @@
   }
 
 	body {
-		background: radial-gradient(circle at top left, #4DA167 0%, #4E6E5D 30%, #4D5057 100%);
+		background: radial-gradient(circle at top left, #f3f4f6 0%, #d6d8dc 40%, #b3b6bb 100%);
 		color: #CFCFCF;
 		margin: 0;
 		padding: 40px 0;
@@ -35,55 +35,27 @@
   margin-top: 1.5rem;  /* tweak this up/down to taste */
 }
 
-/* Dark green cards with white Garamond text */
+/* White cards with black text */
 	.content-card {
-  background: linear-gradient(
-    225deg,
-    #0c1d14 0%,    /* slightly darker than your base */
-    #102a1c 40%,   /* your existing dark green */
-    #163528 100%   /* slightly lighter, still in palette */
-  );
-  color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #1d4630;
-  padding: 1.5rem 1.75rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-  line-height: 1.6;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-               Arial, sans-serif;
-}
+	  background: #ffffff;
+	  color: #000000;
+	  border-radius: 10px;
+	  border: 1px solid #000000;
+	  padding: 1.5rem 1.75rem;
+	  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+	  line-height: 1.6;
+	  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+	               Arial, sans-serif;
+	}
 /* Ensure card can host an overlay */
 .content-card {
   position: relative;
   overflow: hidden;
 }
 
-/* Radial glow that follows the cursor */
+/* Disable previous radial glow overlay on cards */
 .content-card::before {
-  content: "";
-  position: absolute;
-  inset: -120px; /* extend beyond edges so glow doesn't clip */
-  pointer-events: none;
-  background: radial-gradient(
-    circle at var(--glow-x, 50%) var(--glow-y, 50%),
-    rgba(120, 255, 180, 0.26),   /* inner light green */
-    rgba(120, 255, 180, 0.08) 20%,
-    transparent 55%
-  );
-  opacity: 0;
-  transition: opacity 0.2s ease-out;
-  z-index: 0;
-}
-
-/* Turn glow on when hovered */
-.content-card:hover::before {
-  opacity: 1;
-}
-
-/* Keep text above the glow */
-.content-card > * {
-  position: relative;
-  z-index: 1;
+	content: none;
 }
 
 		/* Ensure lists match the card text styling */
@@ -100,10 +72,10 @@
 		margin-bottom: 0.4rem;
 	}
 
-		/* Optional: emphasize strong text but keep it white */
+		/* Optional: emphasize strong text but keep it black */
 	.content-card li strong {
 		font-weight: 600;
-		color: #ffffff;
+		color: #000000;
 	}
 
 	.content-margin-container {
@@ -129,38 +101,38 @@
 	top: 50%;
 	transform: translateY(-50%);
 	font-size: 1.5rem;
-	color: #ffffff;
+	color: #000000;
 	opacity: 0.9;
 	pointer-events: none;
 	}
 
 	.main-content-block {
-  width: 70%;
-  max-width: 1100px;
-  background-color: rgba(13, 16, 23, 0.96);
-  border-radius: 18px;
-  padding: 24px 32px;
-  box-shadow:
-    0 18px 80px rgba(0,0,0,0.65),
-    0 0 0 1px rgba(77,80,87,0.5);
-  backdrop-filter: blur(18px);
-  color: #E6E6E6;
-  position: relative;
-  z-index: 1;
-  margin-left: auto;
-  margin-right: auto;
-}
+	  width: 70%;
+	  max-width: 1100px;
+	  background-color: #ffffff;
+	  border-radius: 18px;
+	  padding: 24px 32px;
+	  box-shadow:
+	    0 14px 50px rgba(0,0,0,0.30);
+	  backdrop-filter: blur(18px);
+	  color: #000000;
+	  position: relative;
+	  z-index: 1;
+	  margin-left: auto;
+	  margin-right: auto;
+	}
 
 	.margin-left-block {
 		font-size: 14px;
 		width: 15%;
 		max-width: 130px;
-		position: relative;
+		position: sticky;
+		margin-top: 16px;
 		margin-left: 10px;
 		text-align: left;
 		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 		padding: 5px;
-		color: #CFCFCF;
+		color: #000000;
 	}
 
 	.margin-right-block {
@@ -171,7 +143,7 @@
 		position: relative;
 		text-align: left;
 		padding: 10px;
-		color: #CFCFCF;
+		color: #000000;
 	}
 
 	img {
@@ -209,34 +181,34 @@
   .show-vid-mobile .vid-mobile { display: block; }
   .show-vid-non-mobile .vid-non-mobile { display: block; }
 
-	/* Image & video hover: deep “shadow in the background” */
+	/* Image & video hover: subtle gray shadow */
 	img:hover,
 	.my-video:hover {
 		transform: translateY(-6px) scale(1.02);
 		box-shadow:
-			0 30px 80px rgba(0, 0, 0, 0.85),
-			0 0 0 1px rgba(207,207,207,0.25);
-		filter: drop-shadow(0 24px 60px rgba(61, 247, 114, 0.45));
+			0 8px 20px rgba(0, 0, 0, 0.18),
+			0 0 0 1px rgba(207,207,207,0.18);
+		filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.18));
 	}
 
 	a:link,
 	a:visited {
-		color: #3BC14A;
+		color: #000000;
 		text-decoration: none;
 		font-weight: 500;
 		transition: color 180ms ease, text-shadow 180ms ease;
 	}
 
 	a:hover {
-		color: #4DA167;
-		text-shadow: 0 0 12px rgba(59,193,74,0.7);
+		color: #000000;
+		text-shadow: none;
 	}
 
 	h1 {
 		font-size: 24px;
 		margin-top: 4px;
 		margin-bottom: 14px;
-		color: #FFFFFF;
+		color: #000000;
 		letter-spacing: 0.02em;
 	}
 
@@ -246,7 +218,7 @@
 		flex-grow: 1;
 		width: 100%;
 		max-width: 100%;
-		color: #FFFFFF;
+		color: #000000;
 	}
 
 	.paper-title {
@@ -255,21 +227,22 @@
 		font-size: 32px;
 		font-weight: 600;
 		letter-spacing: 0.03em;
-		color: #FFFFFF;
+		color: #000000;
 		margin-bottom: 18px; /* controls space above author names */
-		}
+		background-color: #FFFFFF;
+	}
 
 	.paper-authors {
 		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 		font-size: 17px;
 		font-weight: 400;
-		color: #CFCFCF;
+		color: #000000;
 	}
 
 	.paper-subtitle {
 		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 		font-size: 16px;
-		color: #A8B0BA;
+		color: #000000;
 		padding-top: 8px;
 	}
 
@@ -291,9 +264,7 @@
 		box-shadow:
 		        0px 0px 1px 1px rgba(0,0,0,0.35),
 		        5px 5px 0 0px #0D1017,
-		        5px 5px 1px 1px rgba(0,0,0,0.35),
-		        10px 10px 0 0px #0D1017,
-		        10px 10px 1px 1px rgba(0,0,0,0.35);
+		        5px 5px 1px 1px rgba(0,0,0,0.55);
 		margin-top: 5px;
 		margin-left: 10px;
 		margin-right: 30px;
@@ -309,7 +280,7 @@
 
 	div.hypothesis {
 		width: 80%;
-		background: linear-gradient(135deg, #4E6E5D 0%, #4DA167 100%);
+		background: linear-gradient(135deg, #eef2f0 0%, #737672e9 100%);
 		border: 1px solid rgba(207,207,207,0.6);
 		border-radius: 16px;
 		font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", Courier, monospace;
@@ -323,7 +294,7 @@
 
 	div.citation {
     font-size: 0.9em;
-    background-color:#141820;
+    background-color:#ffffff;
     padding: 14px;
 		height: 200px;
 		border-radius: 12px;
@@ -365,6 +336,34 @@
 	    vertical-align: top;
 	    width: 50px;
 	}
+	.outline-title {
+  font-size: 1.1rem;      /* larger than body text */
+  font-weight: 600;
+  color: black;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.outline-links a {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;        /* closer to normal text */
+  color: black;            /* a bit softer green */
+  text-decoration: none;
+  padding: 0.05rem 0;
+  border-radius: 3px;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+/* Light green emphasis on hover/active */
+.outline-links a:hover {
+  color: #21222225;        /* light green text on hover */
+  background-color: transparent;   /* no dark green box */
+  transform: translateX(1px);  /* smaller nudge */
+}
 	.getmusic-figures-row {
   display: flex;
   gap: 1.5rem;
@@ -419,71 +418,9 @@ html::before {
   z-index: 0;
   animation: float-notes-1 45s linear infinite;
 }
-
-/* ===== Layer 2: mid, right-to-left ===== */
-html::after {
-  content: "♬ ♩ ♪ ♫ ♩ ♬ ♫ ♪ ♩ ♬ ♫ ♪ ♩ ♬ ♫";
-  position: fixed;
-  top: 42%;
-  left: -60%;
-  width: 280%;
-  pointer-events: none;
-  font-size: 64px;
-  color: rgba(0, 0, 0, 0.28);
-  white-space: nowrap;
-  z-index: 0;
-  animation: float-notes-2 55s linear infinite;
-}
-
-/* ===== Layer 3: lower, left-to-right ===== */
-body::before {
-  content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
-  position: fixed;
-  bottom: 20%;
-  left: -50%;
-  width: 260%;
-  pointer-events: none;
-  font-size: 48px;
-  color: rgba(0, 0, 0, 0.20);
-  white-space: nowrap;
-  z-index: 0;
-  animation: float-notes-3 35s linear infinite;
-}
-
-/* ===== Layer 4: very low, right-to-left ===== */
-body::after {
-  content: "♬ ♩ ♪ ♫ ♩ ♬ ♫ ♪ ♩ ♬ ♫ ♪ ♩ ♬ ♫";
-  position: fixed;
-  bottom: 5%;
-  left: -70%;
-  width: 300%;
-  pointer-events: none;
-  font-size: 72px;
-  color: rgba(0, 0, 0, 0.18);
-  white-space: nowrap;
-  z-index: 0;
-  animation: float-notes-4 65s linear infinite;
-}
-
-/* Keyframes for each strip */
 @keyframes float-notes-1 {
   0%   { transform: translateX(0); }
   100% { transform: translateX(40%); }
-}
-
-@keyframes float-notes-2 {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes float-notes-3 {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(35%); }
-}
-
-@keyframes float-notes-4 {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-60%); }
 }
 	@keyframes sweepMask {
 		0% { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
@@ -590,149 +527,170 @@ body::after {
 
 		<div class="content-margin-container" id="intro">
 				<div class="margin-left-block">
-          <!-- table of contents here -->
-          <div style="position:fixed; max-width:inherit; top:max(20%,120px)">
-              <b style="font-size:16px">Outline</b><br><br>
-              <a href="#intro">Introduction</a><br><br>
-              <a href="#does_x_do_y">Does X do Y?</a><br><br>
-              <a href="#implications_and_limitations">Implications and limitations</a><br><br>
-          </div>
-				</div>
+  <div class="outline-title">Outline</div>
+  <nav class="outline-links">
+    <a href="#introduction">1) Introduction</a>
+    <a href="#related-work">2) Related work</a>
+    <a href="#methodology">3) Methodology &amp; Experiments</a>
+    <a href="#results">4) Results &amp; Analysis</a>
+    <a href="#conclusions">5) Conclusions</a>
+  </nav>
+</div>
 		    <div class="main-content-block">
 			<!-- ===================== Introduction ===================== -->
 <section id="introduction" class="content-section">
   <h2>Introduction</h2>
-  <div class="content-card">
-    <p class="introduction-content-section">
-      Symbolic music generation refers to creating written music — notes, rhythms, instruments, chords — rather than audio waveforms. Instead of generating sound directly, models work with MIDI (Musical Instrument Digital Interface), a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements.
-    </p>
-    <p>
-      Most current systems represent MIDI as a single sequence of note events, forcing the model to implicitly discover 2D structure — melodic continuity, chord consistency, and voice independence — from flattened data. Despite improvements in tokenization schemes, these models often struggle to maintain stable voice lines or valid harmonic textures. In reality, polyphonic music is inherently two-dimensional: the horizontal axis reflects how melodies evolve over time, while the vertical axis captures the harmony formed by notes sounding together at each moment. Flattening this grid into a 1D sequence obscures both dimensions, making it significantly harder for models to learn coherent melodic motion and consistent chordal structure.
-    </p>
-    <p>
-      GETMusic, a framework developed by Microsoft Research, takes a different approach by converting MIDI into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
-    </p>
-	 <div class="getmusic-figures-row">
-  <figure class="getmusic-figure">
-    <img src="./images/getmusic1_1.png" alt="GETMusic representation example 1">
-  </figure>
-  <figure class="getmusic-figure">
-    <img src="./images/getmusic1_2.png" alt="GETMusic representation example 2">
-  </figure>
-</div>
-    <p>
-      Our contribution is to build upon GETMusic by incorporating an explicit, music-theory-informed loss regularization term into the GETMusic framework to more reliably enforce vertical harmonic constraints. By aligning the objective function with known principles of polyphonic writing, we strengthen the inductive biases already present in GETMusic’s 2D representation and reduce the dependence on massive curated datasets. We aim to produce more coherent polyphonic outcomes, especially when training resources or datasets are limited.
-    </p>
+  <p class="introduction-content-section">
+    AI-guided audio generation efforts have become increasingly popular, both in research and in industry [https://arxiv.org/abs/2406.00146, https://suno.com/home]. However, there is a key distinction between training models to generate pure audio and compose music. The process of composing true playable pieces -- consisting of notes, rhythms, instruments, chords -- is referred to as symbolic music generation. For symbolic music generation, we train models to work with and generate MIDI (Musical Instrument Digital Interface) files, a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements. 
+  </p>
+  <p>
+Most current systems represent MIDIs as a single sequence of note events, forcing the model to implicitly discover 2D structure — melodic continuity, chord consistency, and voice independence — from flattened data. Despite improvements in tokenization schemes, these models often struggle to maintain stable voice lines or valid harmonic textures. In reality, polyphonic music is inherently two-dimensional: the horizontal axis reflects how melodies evolve over time, while the vertical axis captures the harmony formed by notes sounding together at each moment. Flattening this grid into a 1D sequence obscures both dimensions, making it significantly harder for models to learn coherent melodic motion and consistent chordal structure. One framework developed by Microsoft research, GETMusic, addresses this issue by converting MIDI inputs into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
+  </p>
+  <div class="getmusic-figures-row">
+    <figure class="getmusic-figure">
+      <img src="./images/getmusic1_1.png" alt="GETMusic representation example 1">
+    </figure>
+    <figure class="getmusic-figure">
+      <img src="./images/getmusic1_2.png" alt="GETMusic representation example 2">
+    </figure>
   </div>
+  <p>
+We seek to build upon the GETMusic architecture by incorporating an explicit, music-theory-informed loss regularization term into the GETMusic framework to more reliably enforce vertical harmonic constraints. By aligning the objective function with known principles of polyphonic writing, we strengthen the inductive biases already present in GETMusic’s 2D representation and reduce the dependence on massive curated datasets. We aim to produce more coherent polyphonic outcomes, especially when training resources or datasets are limited.
+  </p>
+  <p>
 </section>
 
-<!-- = History of sequence-based symbolic MIDI generation = -->
-<section id="history-sequence" class="content-section">
-  <h2>History of sequence-based symbolic MIDI generation and their limitations</h2>
-  <div class="content-card">
-    <p>
-      Early neural approaches to symbolic music generation modeled notes as time-ordered sequences, typically using RNNs to generate monophonic or lightly polyphonic textures (Boulanger-Lewandowski et al., 2012). These models struggled with long-range structure, voice independence, and harmonic consistency. Later, transformer-based systems improved long-range coherence, but virtually all popular models still rely on flattened 1D event streams, leaving it to the architecture to reconstruct multi-voice structure implicitly.
-    </p>
-    <p>Notable examples include:</p>
-    <ul>
-      <li>
-        <strong>Music Transformer (Huang et al., 2018)</strong>: Introduces relative positional self-attention to capture long-term structure, but still represents all notes as a single interleaved 1D event stream with no explicit vertical alignment.
-      </li>
-      <li>
-        <strong>REMI (Pop Music Transformer) (Huang &amp; Yang, 2020)</strong>: Adds musically meaningful meta-events (bars, beats, chords, tempo) to improve structural awareness, yet ultimately remains a purely sequential token representation.
-      </li>
-      <li>
-        <strong>Compound Word Transformer (CP-Transformer) (Hsiao et al., 2021)</strong>: Groups event attributes (pitch, duration, velocity, instrument for a single note) into “compound tokens” rather than letting these attributes be separate tokens, but the model still processes a 1D stream of notes without dedicated structure for vertical chords.
-      </li>
-      <li>
-        <strong>PopMAG (et al., 2020)</strong>: Generates multi-track pop arrangements using track embeddings to indicate instrument identity, while still relying on a unified event sequence that leaves cross-track harmony implicit.
-      </li>
-      <li>
-        <strong>MMM (Multi-Track Music Machine) (Ens &amp; Pasquier, 2020)</strong>: For multi-track music, the representation concatenates the tracks; despite the “multi-track” name, the underlying representation is 1D.
-      </li>
-      <li>
-        <strong>MTMT (Multitrack Music Transformer) (Dong et al., 2023)</strong>: Proposes a transformer architecture for multi-track symbolic music generation by encoding each musical event as a tuple of attributes (instrument, pitch, duration, velocity, etc.), yet ultimately serializes all tracks into one long event sequence.
-      </li>
-      <li>
-        <strong>Nested Music Transformer (Ryu et al., 2024)</strong>: Encodes event tuples (type, beat, pitch, duration, instrument), but fully flattens them into a time-ordered sequence.
-      </li>
-    </ul>
-    <p>
-      Across all of these, track or voice identity is encoded as a token attribute rather than a structural axis. As a result, vertical harmony emerges only from learned attention weights rather than from architectural bias, making the models prone to voice crossing, unstable chord structures, inconsistent spacing, and low-level harmonic errors unless trained on extremely large datasets. This limitation motivates approaches that retain the benefits of transformers while embedding stronger structural inductive biases.
-    </p>
-  </div>
+<!-- = Related work = -->
+<section id="related-work" class="content-section">
+  <h2>Related work</h2>
+  <h3>Sequence-based symbolic models</h3>
+  <p>
+    Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures (Boulanger-Lewandowski et al., 2012)[1]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. In 2018, the transformer architecture was applied to music for the first time (Huang et al., 2018)[2], introducing relative positional self-attention for long-range structure, but encoding all notes—across hands or tracks—as a single 1D event stream. Here, vertical relationships (which notes sound together) were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
+  </p>
+  <p>Some other examples of modern symbolic music generators that interpret musical input as a single stream include:</p>
+  <ul>
+    <li>
+      <strong>Compound Word Transformer (CP-Transformer) (Hsiao et al., 2021)</strong>[3]: Groups attributes of a single note (pitch, duration, velocity, instrument) into compound tokens, shortening sequences and slightly tightening intra-note structure, but the representation remains a flat stream of notes.
+    </li>
+    <li>
+      <strong>PopMAG / MuMIDI (Ren et al., 2020)</strong>[4]: Proposes a multi-track sequence representation where track identity and chord information are encoded as token attributes. This allows multi-track accompaniment generation but further lengthens the sequence and still interleaves tracks in one stream.
+    </li>
+    <li>
+      <strong>MMM (Multi-Track Music Machine), MTMT (Multitrack Music Transformer), and Nested Music Transformer</strong> (Ens &amp; Pasquier, 2020; Dong et al., 2023; Ryu et al., 2024)[5–7]: Encode multi-track events as tuples (instrument, pitch, duration, etc.) that are then fully flattened into a 1D sequence.
+    </li>
+  </ul>
+  <p>
+    In these sequence-based models, harmony and voice-leading emerge from learned attention patterns over a long interleaved sequence. In practice, this creates well-known failure modes—voice crossing, unstable chord spacing, local dissonances, and loss of individual line identity—unless trained on a very large dataset and carefully regularized. Our work is motivated by this limitation: we aim to preserve the advantages of transformer-style modeling while moving towards representations and objectives that encode vertical structure more explicitly.
+  </p>
+
+  <h3>Image-based / 2D representations</h3>
+  <p>
+    A second family of methods abandons purely sequential representations and instead treats symbolic music as a 2D grid, usually a piano-roll with time on the horizontal axis and pitch on the vertical axis, sometimes with instrument tracks as channels. This makes vertical harmony explicit in the representation but introduces its own challenges.
+  </p>
+  <ul>
+    <li>
+      <strong>MuseGAN (Dong et al., 2017/2018)</strong>[8]: Generates multi-track piano-roll tensors, where each bar is represented as a binary matrix of size (time steps × pitches × tracks). Convolutional GANs operate directly on this 2D (plus channels) structure, so vertical chords and cross-track combinations are local patterns in an “image” rather than dispersed tokens, yielding strong local harmonic textures but typically limited to bar-level phrases with GAN training instabilities and weak global structure.
+    </li>
+    <li>
+      <strong>MidiNet (Yang et al., 2017)</strong>[9]: Uses convolutional GANs to generate melody one bar at a time in piano-roll form, conditioned on both 1D sequences (chords) and 2D contexts (previous bars). While the vertical axis explicitly encodes chord content, the objective is still a generic adversarial loss over images rather than a music-theoretic notion of harmony.
+    </li>
+    <li>
+      <strong>DiffRoll (Cheuk et al., 2022)</strong>[10]: Employs diffusion to generate piano-rolls conditioned on audio spectrograms for automatic music transcription. The model denoises a 2D time-pitch grid of symbolic events from Gaussian noise, demonstrating that diffusion in a piano-roll space can capture realistic local harmonic patterns.
+    </li>
+  </ul>
+  <p>
+    These 2D approaches leverage the vertical axis to make simultaneous note representations and harmony more accessible to the model, but they typically operate on high-resolution, sparse piano-roll images that are expensive to model. They also rely on distribution-matching objectives (GAN, cross-entropy/MSE, or other generic diffusion losses) that treat harmonic correctness as whatever appears frequently in the training data, without explicit constraints about voice-leading, chord function, or dissonance resolution.
+  </p>
+
+  <h3>GETMusic and 2D token grids</h3>
+  <p>
+    Architecturally, our work is closest to GETMusic (Lv et al., 2023)[11], which explicitly positions itself between sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
+  </p>
+  <p>
+    A discrete diffusion model, GETDiff, denoises masked target tracks conditioned on source tracks in a non-autoregressive fashion, enabling flexible any-track-to-any-track generation and zero-shot infilling. Compared to piano-roll GANs/diffusion, GETScore avoids extremely large and sparse images while still making both horizontal continuity and vertical cross-track relationships spatially explicit. Compared to 1D event models such as PopMAG, it eliminates track interleaving: tracks are temporally aligned in a score-like grid rather than interwoven in a single stream.
+  </p>
+  <p>
+    However, GETMusic’s objective remains a purely statistical discrete diffusion loss plus auxiliary reconstruction terms. There is no explicit bias towards music-theoretic principles beyond what is implicitly encoded in the dataset and the compound-token construction. In fact, the authors emphasize that they crawled and cleaned over 1.5M MuseScore MIDIs (around 2,800 hours of data) to train GETMusic, underscoring its dependence on very large curated datasets to learn harmonic structure robustly.
+  </p>
+
+  <h3>Positioning our contribution</h3>
+  <p>
+    Our project builds directly on this GETMusic line of work: we retain a 2D symbolic representation and a diffusion-style transformer backbone, but modify the learning objective by adding a music-theory-informed regularization term that explicitly evaluates the vertical slice (local harmony and spacing at each time step). Rather than treating harmony as a purely emergent property of data and generic denoising, we encode constraints derived from polyphonic writing practice—for example, penalties for certain dissonant intervals or unstable chord spacings, and rewards for consonant interval structures and consistent voice ranges—and integrate them into the loss function calculation.
+  </p>
 </section>
 
 <!-- = Non-transformer models with explicit 2D inductive biases = -->
 <section id="non-transformer-2d" class="content-section">
   <h2>Non-transformer models with explicit 2D inductive biases</h2>
-  <div class="content-card">
-    <p>
-      Prior to the Transformer era, several models demonstrated that explicitly modeling the 2D music grid (voices × time) produces more coherent voice-leading and harmony:
-    </p>
-    <ul>
-      <li>
-        <strong>DeepBach (Hadjeres et al., 2017)</strong>: Models chorales as a matrix of pitches over discrete time steps; the sampling process treats vertical slices of the score as first-class objects.
-      </li>
-      <li>
-        <strong>Coconet / Counterpoint by Convolution (Huang et al., 2019)</strong>: Uses a large convolutional network over a 2D piano-roll representation (pitch × time) to enable inpainting and harmony generation.
-      </li>
-    </ul>
-    <p>
-      These systems succeed largely because they directly encode vertical relationships, making correct chord structures and spacing easier for the network to learn. However, they are largely restricted to four-part choral textures and do not readily generalize to multi-track MIDI with arbitrary instrumentation, expressive timing, or long pieces. Moreover, they lack the generative flexibility and scalability of modern diffusion or transformer models.
-    </p>
-  </div>
+  <p>
+    Prior to the Transformer era, several models demonstrated that explicitly modeling the 2D music grid (voices × time) produces more coherent voice-leading and harmony:
+  </p>
+  <ul>
+    <li>
+      <strong>DeepBach (Hadjeres et al., 2017)</strong>: Models chorales as a matrix of pitches over discrete time steps; the sampling process treats vertical slices of the score as first-class objects.
+    </li>
+    <li>
+      <strong>Coconet / Counterpoint by Convolution (Huang et al., 2019)</strong>: Uses a large convolutional network over a 2D piano-roll representation (pitch × time) to enable inpainting and harmony generation.
+    </li>
+  </ul>
+  <p>
+    These systems succeed largely because they directly encode vertical relationships, making correct chord structures and spacing easier for the network to learn. However, they are largely restricted to four-part choral textures and do not readily generalize to multi-track MIDI with arbitrary instrumentation, expressive timing, or long pieces. Moreover, they lack the generative flexibility and scalability of modern diffusion or transformer models.
+  </p>
 </section>
 
 <!-- = Choosing GETMusic as a baseline: MIDI score to image representation = -->
 <section id="getmusic-baseline" class="content-section">
   <h2>Choosing GETMusic as a baseline: MIDI score to image representation</h2>
-  <div class="content-card">
-    <p>
-      GETMusic combines a 2D symbolic representation with diffusion-based generation, bridging the gap between classical 2D harmony models and modern deep generative architectures. Rather than representing MIDI as a sequence of events, GETMusic rasterizes symbolic music into a pitch × time grid representation known as GETScore. This creates a multi-channel “image” where horizontal continuity corresponds to melodic flow and vertical stacks correspond to chords or polyphonic textures.
-    </p>
-    <p>
-      GETMusic applies a discrete diffusion model, GETDiff, to the GETScore representation to progressively reconstruct clean symbolic tracks from masked, corrupted inputs. The denoiser is implemented as a transformer with RoFormer layers: the model embeds the 2D GETScore grid (tracks arranged vertically, time units horizontally, with separate rows for pitch and duration per track), adds learnable condition flags that indicate which tokens are sources/targets/ignored, projects into a model dimension, and then feeds the sequence through 12 RoFormer layers followed by a classification head over the token vocabulary.
-    </p>
-    <p>
-      In the forward (diffusion) process, target-track tokens are iteratively corrupted by transitioning them toward a special mask token according to a categorical Markov chain, while source-track tokens are kept as ground truth and uninvolved tracks are filled with a special empty token that does not diffuse. In the denoising process, at each timestep GETDiff predicts the clean token distribution for all positions non-autoregressively, i.e., it generates all tokens in parallel conditioned on the current noisy GETScore, the source tracks, and condition flags; after each reverse step, source tracks are reset to their ground truth values and uninvolved tracks are re-emptied.
-    </p>
-    <p>
-      By randomly sampling source and target tracks during training, the same model can handle any source-target combination without retraining. In this case, there are tracks for lead melody, piano, guitar, strings, bass, and drums. GETScore’s vertically stacked, temporally aligned tracks preserve interdependencies among simultaneous notes within and across tracks, so GETDiff always denoises in a space where track separations and time alignment are explicit.
-    </p>
-  </div>
+  <p>
+    GETMusic combines a 2D symbolic representation with diffusion-based generation, bridging the gap between classical 2D harmony models and modern deep generative architectures. Rather than representing MIDI as a sequence of events, GETMusic rasterizes symbolic music into a pitch × time grid representation known as GETScore. This creates a multi-channel “image” where horizontal continuity corresponds to melodic flow and vertical stacks correspond to chords or polyphonic textures.
+  </p>
+  <p>
+    GETMusic applies a discrete diffusion model, GETDiff, to the GETScore representation to progressively reconstruct clean symbolic tracks from masked, corrupted inputs. The denoiser is implemented as a transformer with RoFormer layers: the model embeds the 2D GETScore grid (tracks arranged vertically, time units horizontally, with separate rows for pitch and duration per track), adds learnable condition flags that indicate which tokens are sources/targets/ignored, projects into a model dimension, and then feeds the sequence through 12 RoFormer layers followed by a classification head over the token vocabulary.
+  </p>
+  <p>
+    In the forward (diffusion) process, target-track tokens are iteratively corrupted by transitioning them toward a special mask token according to a categorical Markov chain, while source-track tokens are kept as ground truth and uninvolved tracks are filled with a special empty token that does not diffuse. In the denoising process, at each timestep GETDiff predicts the clean token distribution for all positions non-autoregressively, i.e., it generates all tokens in parallel conditioned on the current noisy GETScore, the source tracks, and condition flags; after each reverse step, source tracks are reset to their ground truth values and uninvolved tracks are re-emptied.
+  </p>
+  <p>
+    By randomly sampling source and target tracks during training, the same model can handle any source-target combination without retraining. In this case, there are tracks for lead melody, piano, guitar, strings, bass, and drums. GETScore’s vertically stacked, temporally aligned tracks preserve interdependencies among simultaneous notes within and across tracks, so GETDiff always denoises in a space where track separations and time alignment are explicit.
+  </p>
 </section>
 
 <!-- = Architectural limitations = -->
 <section id="architectural-limitations" class="content-section">
   <h2>Architectural limitations</h2>
-  <div class="content-card">
-    <p>
-      GETScore and GETDiff together introduce a stronger structural bias than standard sequence-based models: tracks are explicitly separated yet temporally aligned, and within-track simultaneity is compacted into compound pitch tokens derived from real data. However, from an optimization perspective, GETMusic is still trained with a generic discrete diffusion objective over tokens: the loss is a variational lower bound with categorical transitions and an additional x₀-parameterization term, effectively encouraging the model to reconstruct the original GETScore tokens from noisy versions.
-    </p>
-    <p>
-      Crucially, this objective does not encode any explicit music-theoretic constraints. In particular, GETMusic does not directly model or penalize chord plausibility or spacing (beyond what is implicit in the data), or stylistic consistency of harmony or voice leading. Harmony and voice leading are therefore emergent properties that the model must infer implicitly from the training corpus, rather than being enforced by the loss. This interacts with the inherent data demands of diffusion: GETDiff is trained with 100 denoising steps over a large vocabulary (11,883 tokens) and a 2D multi-track grid, so learning robust harmonic behavior requires substantial coverage of stylistic and structural patterns. In practice, the authors mitigate this by crawling 1.56M MIDI files from MuseScore and constructing 137,812 GETScores (approximately 2,800 hours worth) after strict cleaning and preprocessing, but assembling such a dataset and pipeline is nontrivial for the average person.
-    </p>
-    <p>
-      These factors motivate our approach: rather than relying solely on large-scale data and a generic categorical diffusion objective to “discover” harmonic structure, we introduce music-theory-informed regularization terms that explicitly favor vertically coherent harmony within the GETMusic framework.
-    </p>
-  </div>
+  <p>
+    GETScore and GETDiff together introduce a stronger structural bias than standard sequence-based models: tracks are explicitly separated yet temporally aligned, and within-track simultaneity is compacted into compound pitch tokens derived from real data. However, from an optimization perspective, GETMusic is still trained with a generic discrete diffusion objective over tokens: the loss is a variational lower bound with categorical transitions and an additional x₀-parameterization term, effectively encouraging the model to reconstruct the original GETScore tokens from noisy versions.
+  </p>
+  <p>
+    Crucially, this objective does not encode any explicit music-theoretic constraints. In particular, GETMusic does not directly model or penalize chord plausibility or spacing (beyond what is implicit in the data), or stylistic consistency of harmony or voice leading. Harmony and voice leading are therefore emergent properties that the model must infer implicitly from the training corpus, rather than being enforced by the loss. This interacts with the inherent data demands of diffusion: GETDiff is trained with 100 denoising steps over a large vocabulary (11,883 tokens) and a 2D multi-track grid, so learning robust harmonic behavior requires substantial coverage of stylistic and structural patterns. In practice, the authors mitigate this by crawling 1.56M MIDI files from MuseScore and constructing 137,812 GETScores (approximately 2,800 hours worth) after strict cleaning and preprocessing, but assembling such a dataset and pipeline is nontrivial for the average person.
+  </p>
+  <p>
+    These factors motivate our approach: rather than relying solely on large-scale data and a generic categorical diffusion objective to “discover” harmonic structure, we introduce music-theory-informed regularization terms that explicitly favor vertically coherent harmony within the GETMusic framework.
+  </p>
 </section>
 
 <!-- = Adding explicit music-theory-informed loss regularization term = -->
 <section id="loss-regularization" class="content-section">
   <h2>Adding explicit music-theory-informed loss regularization term</h2>
-  <div class="content-card">
-    <p><em>(Content to be added.)</em></p>
-  </div>
+  <p><em>(Content to be added.)</em></p>
 </section>
 
-<!-- = Our methodology = -->
+<!-- = Methodology & Experiments = -->
 <section id="methodology" class="content-section">
-  <h2>Our methodology</h2>
-  <div class="content-card">
-    <p><em>(Content to be added.)</em></p>
-  </div>
+  <h2>Methodology &amp; Experiments</h2>
+  <p><em>(Content to be added.)</em></p>
+</section>
+
+<!-- = Results & Analysis = -->
+<section id="results" class="content-section">
+  <h2>Results &amp; Analysis</h2>
+  <p><em>(Content to be added.)</em></p>
+</section>
+
+<!-- = Conclusions = -->
+<section id="conclusions" class="content-section">
+  <h2>Conclusions</h2>
+  <p><em>(Content to be added.)</em></p>
 </section>
 			<div class="project-description">
   <div class="project-description">
@@ -740,20 +698,7 @@ body::after {
 </div>
 		</div>
 		    <div class="margin-right-block">
-						
-		    </div>
-		</div>
-
-    <div class="content-margin-container" id="intro">
-				<div class="margin-left-block">
-				</div>
-		    <div class="main-content-block">
-						<h1>Introduction</h1>
-            Motivate your project. What question are you asking. Why is it unanswered so far? What gap in the literature or practice are you filling?
-            Why is it important?
-		    </div>
-		    <div class="margin-right-block">
-						Margin note that clarifies some detail #main-content-block for intro section.
+					
 		    </div>
 		</div>
 
@@ -825,15 +770,67 @@ body::after {
 				</div>
 		    <div class="main-content-block">
 						<div class='citation' id="references" style="height:auto"><br>
-							<span style="font-size:16px">References:</span><br><br>
-							<a id="ref_1"></a>[1] <a href="https://en.wikipedia.org/wiki/Allegory_of_the_cave">Allegory of the Cave</a>, Plato, c. 375 BC<br><br>
-							<a id="ref_2"></a>[2] <a href="">A Human-Level AGI</a>, OpenAI, 2025<br><br>
+							<span style="font-size:24px">References:</span><br><br>
+							[1] N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
+							<em>Modeling Temporal Dependencies in High-Dimensional Sequences: Application to Polyphonic Music Generation and Transcription.</em>
+							In <em>Proceedings of the 29th International Conference on Machine Learning (ICML)</em>, 2012.
+							arXiv:1206.6392.<br><br>
+
+							[2] C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
+							<em>Music Transformer: Generating Music with Long-Term Structure.</em>
+							In <em>International Conference on Learning Representations (ICLR)</em>, 2019.
+							arXiv:1809.04281.<br><br>
+
+							[3] W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
+							<em>Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs.</em>
+							In <em>AAAI Conference on Artificial Intelligence</em>, 2021.
+							arXiv:2101.02402.<br><br>
+
+							[4] Y. Ren, J. He, X. Tan, et al.
+							<em>PopMAG: Pop Music Accompaniment Generation.</em>
+							In <em>Proceedings of the 28th ACM International Conference on Multimedia</em>, 2020.
+							arXiv:2008.07703.<br><br>
+
+							[5] J. Ens and P. Pasquier.
+							<em>MMM: Exploring Conditional Multi-Track Music Generation with the Transformer.</em>
+							In <em>Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)</em>, 2020.
+							arXiv:2008.06048.<br><br>
+
+							[6] H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
+							<em>Multitrack Music Transformer: Learning Long-Term Dependencies in Music with Diverse Instruments.</em>
+							In <em>ICASSP</em>, 2023.
+							arXiv:2207.06983.<br><br>
+
+							[7] K. Ryu, S. Cho, H. Choi, et al.
+							<em>Nested Music Transformer: Sequentially Decoding Compound Tokens in Symbolic Music.</em>
+							In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2024.
+							arXiv:2408.01180.<br><br>
+
+							[8] H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
+							<em>MuseGAN: Multi-Track Sequential Generative Adversarial Networks for Symbolic Music Generation and Accompaniment.</em>
+							In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2018.
+							arXiv:1709.06298.<br><br>
+
+							[9] L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
+							<em>MidiNet: A Convolutional Generative Adversarial Network for Symbolic-Domain Music Generation.</em>
+							In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2017.
+							arXiv:1703.10847.<br><br>
+
+							[10] K. W. Cheuk, R. Sawata, T. Uesaka, et al.
+							<em>DiffRoll: Diffusion-based Generative Music Transcription with Unsupervised Pretraining Capability.</em>
+							In <em>ICASSP</em>, 2023.
+							arXiv:2210.05148.<br><br>
+
+							[11] Z. Lv, Z. Dai, G. Li, et al.
+							<em>GETMusic: Generating Any Music Tracks with a Unified Representation and Diffusion Framework.</em>
+							arXiv:2305.10841, 2023.<br><br>
 						</div>
 		    </div>
 		    <div class="margin-right-block">
             <!-- margin notes for reference block here -->
 		    </div>
 		</div>
+
 	<script>
   document.querySelectorAll('.content-card').forEach(function(card) {
     card.addEventListener('mousemove', function(e) {
