@@ -377,7 +377,20 @@
 		    <div class="main-content-block">
             <!--You can embed an image like this:-->
             <img src="./images/your_image_here.png" width=512px/>
-		    </div>
+			<div class="project-description">
+  <div class="project-description">
+  <p>
+    One fundamental challenge in symbolic music generation (MIDI) is ensuring the coherence and quality of polyphonic music created by modern Transformer models. Most current systems, like those built on sequential token representations, struggle to maintain strong, independent voice lines and valid vertical harmony. This forces the general-purpose self-attention mechanism to implicitly discover all complex rules of voice leading and harmony from sequential data alone, which is inefficient.
+  </p>
+  <p>
+    Historically, pre-Transformer models like Deepbach treated voices as separate streams, while approaches like Coconet used a 3D piano-roll representation (pitch × time × voices) to inject a structural bias. More recently, multi-track transformers have emerged. Our work builds upon GETMusic, a state-of-the-art diffusion-based transformer, which uses an ordinary cross-entropy loss. We argue that while the multi-stream architecture (which separates horizontal melodic flow via self-attention and vertical harmonic flow via cross-attention) provides a useful inductive bias, it does not go far enough.
+  </p>
+  <p>
+    Our key contribution is introducing an explicit, music-theory-informed loss function to regulate the output. This custom loss term is designed to actively enforce specific musical principles—such as correct voice range, non-crossing, and consistent spacing—which are otherwise weakly modeled. By combining the architectural separation of concerns with a loss that actively encodes these rules, we aim to produce polyphonic music with significantly improved structural integrity and musical realism, moving beyond the limitations of simple 1D sequential generation.
+  </p>
+</div>
+</div>
+		</div>
 		    <div class="margin-right-block">
 						Caption for the image.
 		    </div>
