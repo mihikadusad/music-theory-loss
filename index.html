@@ -30,6 +30,10 @@
 		max-width: 900px;
 		padding: 0 1.25rem;
 	}
+	/* Reduce or increase the gap above the very first section */
+.content-section:first-of-type {
+  margin-top: 1.5rem;  /* tweak this up/down to taste */
+}
 
 /* Dark green cards with white Garamond text */
 	.content-card {
@@ -108,6 +112,26 @@
 		justify-content: center;
 		align-items: flex-start;
 		margin-bottom: 32px;
+	}
+	.content-section h2 {
+		position: relative;
+		padding-left: 2.3rem;  /* makes room for the note */
+		font-size: 1.8rem;
+		margin-bottom: 1rem;
+		letter-spacing: 0.02em;
+	}
+
+	/* White music note to the left of each section title */
+	.content-section h2::before {
+	content: "♪";
+	position: absolute;
+	left: -0.6rem;          /* offset a bit toward the black box edge */
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.5rem;
+	color: #ffffff;
+	opacity: 0.9;
+	pointer-events: none;
 	}
 
 	.main-content-block {
@@ -341,6 +365,25 @@
 	    vertical-align: top;
 	    width: 50px;
 	}
+	.getmusic-figures-row {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 1.25rem 0 0.75rem;
+}
+
+.getmusic-figure {
+  flex: 1 1 0;
+  margin: 0;
+}
+
+.getmusic-figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
 	.paper-authors {
   display: flex;
   align-items: baseline;
@@ -363,44 +406,84 @@
   overflow-x: hidden; /* avoid horizontal scroll from the animation */
 }
 
-/* Scrolling line of music notes in the background */
+html::before {
+  content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
+  position: fixed;
+  top: 8%;
+  left: -40%;
+  width: 260%;
+  pointer-events: none;
+  font-size: 52px;
+  color: rgba(0, 0, 0, 0.22);
+  white-space: nowrap;
+  z-index: 0;
+  animation: float-notes-1 45s linear infinite;
+}
+
+/* ===== Layer 2: mid, right-to-left ===== */
+html::after {
+  content: "♬ ♩ ♪ ♫ ♩ ♬ ♫ ♪ ♩ ♬ ♫ ♪ ♩ ♬ ♫";
+  position: fixed;
+  top: 42%;
+  left: -60%;
+  width: 280%;
+  pointer-events: none;
+  font-size: 64px;
+  color: rgba(0, 0, 0, 0.28);
+  white-space: nowrap;
+  z-index: 0;
+  animation: float-notes-2 55s linear infinite;
+}
+
+/* ===== Layer 3: lower, left-to-right ===== */
 body::before {
   content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
   position: fixed;
-  top: 10%;
-  left: -20%;
-  width: 200%;
+  bottom: 20%;
+  left: -50%;
+  width: 260%;
   pointer-events: none;
-  font-size: 36px;
-  color: rgba(0, 0, 0, 0.45); /* black-ish but semi-transparent */
+  font-size: 48px;
+  color: rgba(0, 0, 0, 0.20);
   white-space: nowrap;
-  z-index: 0; /* stays behind content; ensure your main container > 0 if needed */
-  animation: float-notes 30s linear infinite;
+  z-index: 0;
+  animation: float-notes-3 35s linear infinite;
 }
 
-/* Second layer, slower + lower, for more depth */
+/* ===== Layer 4: very low, right-to-left ===== */
 body::after {
   content: "♬ ♩ ♪ ♫ ♩ ♬ ♫ ♪ ♩ ♬ ♫ ♪ ♩ ♬ ♫";
   position: fixed;
   bottom: 5%;
-  left: -30%;
-  width: 220%;
+  left: -70%;
+  width: 300%;
   pointer-events: none;
-  font-size: 28px;
-  color: rgba(0, 0, 0, 0.3);
+  font-size: 72px;
+  color: rgba(0, 0, 0, 0.18);
   white-space: nowrap;
   z-index: 0;
-  animation: float-notes-alt 40s linear infinite;
+  animation: float-notes-4 65s linear infinite;
 }
 
-@keyframes float-notes {
+/* Keyframes for each strip */
+@keyframes float-notes-1 {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-25%); }
+  100% { transform: translateX(40%); }
 }
 
-@keyframes float-notes-alt {
+@keyframes float-notes-2 {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(25%); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes float-notes-3 {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(35%); }
+}
+
+@keyframes float-notes-4 {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-60%); }
 }
 	@keyframes sweepMask {
 		0% { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
@@ -516,13 +599,11 @@ body::after {
           </div>
 				</div>
 		    <div class="main-content-block">
-            <!--You can embed an image like this:-->
-            <img src="./images/your_image_here.png" width=512px/>
 			<!-- ===================== Introduction ===================== -->
 <section id="introduction" class="content-section">
   <h2>Introduction</h2>
   <div class="content-card">
-    <p>
+    <p class="introduction-content-section">
       Symbolic music generation refers to creating written music — notes, rhythms, instruments, chords — rather than audio waveforms. Instead of generating sound directly, models work with MIDI (Musical Instrument Digital Interface), a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements.
     </p>
     <p>
@@ -531,6 +612,14 @@ body::after {
     <p>
       GETMusic, a framework developed by Microsoft Research, takes a different approach by converting MIDI into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
     </p>
+	 <div class="getmusic-figures-row">
+  <figure class="getmusic-figure">
+    <img src="./images/getmusic1_1.png" alt="GETMusic representation example 1">
+  </figure>
+  <figure class="getmusic-figure">
+    <img src="./images/getmusic1_2.png" alt="GETMusic representation example 2">
+  </figure>
+</div>
     <p>
       Our contribution is to build upon GETMusic by incorporating an explicit, music-theory-informed loss regularization term into the GETMusic framework to more reliably enforce vertical harmonic constraints. By aligning the objective function with known principles of polyphonic writing, we strengthen the inductive biases already present in GETMusic’s 2D representation and reduce the dependence on massive curated datasets. We aim to produce more coherent polyphonic outcomes, especially when training resources or datasets are limited.
     </p>
@@ -647,20 +736,11 @@ body::after {
 </section>
 			<div class="project-description">
   <div class="project-description">
-  <p>
-    One fundamental challenge in symbolic music generation (MIDI) is ensuring the coherence and quality of polyphonic music created by modern Transformer models. Most current systems, like those built on sequential token representations, struggle to maintain strong, independent voice lines and valid vertical harmony. This forces the general-purpose self-attention mechanism to implicitly discover all complex rules of voice leading and harmony from sequential data alone, which is inefficient.
-  </p>
-  <p>
-    Historically, pre-Transformer models like Deepbach treated voices as separate streams, while approaches like Coconet used a 3D piano-roll representation (pitch × time × voices) to inject a structural bias. More recently, multi-track transformers have emerged. Our work builds upon GETMusic, a state-of-the-art diffusion-based transformer, which uses an ordinary cross-entropy loss. We argue that while the multi-stream architecture (which separates horizontal melodic flow via self-attention and vertical harmonic flow via cross-attention) provides a useful inductive bias, it does not go far enough.
-  </p>
-  <p>
-    Our key contribution is introducing an explicit, music-theory-informed loss function to regulate the output. This custom loss term is designed to actively enforce specific musical principles—such as correct voice range, non-crossing, and consistent spacing—which are otherwise weakly modeled. By combining the architectural separation of concerns with a loss that actively encodes these rules, we aim to produce polyphonic music with significantly improved structural integrity and musical realism, moving beyond the limitations of simple 1D sequential generation.
-  </p>
 </div>
 </div>
 		</div>
 		    <div class="margin-right-block">
-						Caption for the image.
+						
 		    </div>
 		</div>
 
