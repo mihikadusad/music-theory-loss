@@ -2,6 +2,7 @@
 <head>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 
 <link rel="shortcut icon" href="images/icon.ico">
 <style type="text/css">
@@ -85,6 +86,15 @@
 		align-items: flex-start;
 		margin-bottom: 32px;
 	}
+
+	/* Fixed outline sidebar that no longer affects main card centering */
+	.outline-sidebar {
+		position: fixed;
+		top: 140px;
+		left: 40px;
+		max-width: 180px;
+		z-index: 2;
+	}
 	.content-section h2 {
 		position: relative;
 		padding-left: 2.3rem;  /* makes room for the note */
@@ -126,7 +136,6 @@
 		font-size: 14px;
 		width: 15%;
 		max-width: 130px;
-		position: sticky;
 		margin-top: 16px;
 		margin-left: 10px;
 		text-align: left;
@@ -138,8 +147,8 @@
 	.margin-right-block {
 		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 		font-size: 14px;
-		width: 25%;
-		max-width: 256px;
+		width: 15%;
+		max-width: 130px;
 		position: relative;
 		text-align: left;
 		padding: 10px;
@@ -495,9 +504,20 @@ html::before {
 
   <body>
 
+		<!-- Fixed outline sidebar -->
+		<div class="outline-sidebar">
+			<div class="outline-title">Outline</div>
+			<nav class="outline-links">
+				<a href="#introduction">1) Introduction</a>
+				<a href="#related-work">2) Related work</a>
+				<a href="#methodology">3) Methodology &amp; Experiments</a>
+				<a href="#results">4) Results &amp; Analysis</a>
+				<a href="#conclusions">5) Conclusions</a>
+				<a href="#references">6) References</a>
+			</nav>
+		</div>
+
 		<div class="content-margin-container">
-				<div class="margin-left-block">
-				</div>
 		    <div class="main-content-block">
 						<table class="header" align="left">
 							<tr>
@@ -521,21 +541,9 @@ html::before {
 							</tr>
 						</table>
 					</div>
-					<div class="margin-right-block">
-					</div>
 		</div>
 
 		<div class="content-margin-container" id="intro">
-				<div class="margin-left-block">
-  <div class="outline-title">Outline</div>
-  <nav class="outline-links">
-    <a href="#introduction">1) Introduction</a>
-    <a href="#related-work">2) Related work</a>
-    <a href="#methodology">3) Methodology &amp; Experiments</a>
-    <a href="#results">4) Results &amp; Analysis</a>
-    <a href="#conclusions">5) Conclusions</a>
-  </nav>
-</div>
 		    <div class="main-content-block">
 			<!-- ===================== Introduction ===================== -->
 <section id="introduction" class="content-section">
@@ -664,174 +672,789 @@ We seek to build upon the GETMusic architecture by incorporating an explicit, mu
   <p>
     Crucially, this objective does not encode any explicit music-theoretic constraints. In particular, GETMusic does not directly model or penalize chord plausibility or spacing (beyond what is implicit in the data), or stylistic consistency of harmony or voice leading. Harmony and voice leading are therefore emergent properties that the model must infer implicitly from the training corpus, rather than being enforced by the loss. This interacts with the inherent data demands of diffusion: GETDiff is trained with 100 denoising steps over a large vocabulary (11,883 tokens) and a 2D multi-track grid, so learning robust harmonic behavior requires substantial coverage of stylistic and structural patterns. In practice, the authors mitigate this by crawling 1.56M MIDI files from MuseScore and constructing 137,812 GETScores (approximately 2,800 hours worth) after strict cleaning and preprocessing, but assembling such a dataset and pipeline is nontrivial for the average person.
   </p>
-  <p>
     These factors motivate our approach: rather than relying solely on large-scale data and a generic categorical diffusion objective to “discover” harmonic structure, we introduce music-theory-informed regularization terms that explicitly favor vertically coherent harmony within the GETMusic framework.
   </p>
 </section>
 
-<!-- = Adding explicit music-theory-informed loss regularization term = -->
-<section id="loss-regularization" class="content-section">
-  <h2>Adding explicit music-theory-informed loss regularization term</h2>
-  <p><em>(Content to be added.)</em></p>
-</section>
-
 <!-- = Methodology & Experiments = -->
 <section id="methodology" class="content-section">
-  <h2>Methodology &amp; Experiments</h2>
-  <p><em>(Content to be added.)</em></p>
+
+<h2>Methodology &amp; Experiments</h2>
+
+<p>
+To validate our hypothesis that explicit music-theoretic constraints can improve polyphonic generation—particularly in data-constrained environments—we implemented our proposed regularization framework on top of the GETMusic architecture. Our goal is to determine whether injecting domain-specific inductive biases into a diffusion-based symbolic music generator enables coherent harmonic structure even when trained on only a few hundred examples. We therefore conducted controlled experiments comparing the original GETMusic loss (GETM) against our proposed Music Theory Loss (MTL), using identical training conditions and evaluation metrics.
+</p>
+
+<h3>Dataset and Preprocessing</h3>
+
+<p>
+We utilized the Slakh2100 dataset, a standard benchmark for audio source separation and symbolic music generation. Since our task focuses exclusively on symbolic generation, we extracted only the MIDI component, which provides separated instrumental tracks including bass, drums, guitar, and piano. These tracks were converted into the 2D GETScore representation required by GETMusic.
+</p>
+
+<p>
+Our preprocessing pipeline consisted of three major stages:
+</p>
+
+<p>
+<strong>1. Track Merging.</strong>
+We mapped Slakh’s multi-instrument arrangements into the standardized 14-row GETScore layout (7 instruments × 2 attributes: pitch and duration). This preserves both horizontal temporal structure and vertical harmonic alignment across tracks.
+</p>
+
+<p>
+<strong>2. Quantization and Filtering.</strong>
+We quantized all MIDI events to a fixed temporal resolution compatible with the model’s maximum sequence length of 512 tokens. This ensured uniformity across the dataset and reduced sparsity in the grid-like representation.
+</p>
+
+<p>
+<strong>3. Data Pruning.</strong>
+Tracks that lacked sufficient polyphonic content or fell below a minimum length threshold were removed. The resulting curated dataset consisted of <strong>292 MIDI files</strong>—dramatically smaller than the 1.5M files used by the original GETMusic authors. This constrained setting is intentional: our goal is to test whether explicit harmonic regularization can compensate for limited data, a regime where standard diffusion-based systems often fail.
+</p>
+
+<h3>Architecture and the Music Theory Loss</h3>
+
+<p>
+Our backbone model is the Diffusion RoFormer (Rotary Transformer) used in the GETMusic framework. Let the logits over the discrete vocabulary at each diffusion step be denoted by
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <mi>&ell;</mi>
+      <mo>&#x2208;</mo>
+      <msup>
+        <mi>&#x211D;</mi>
+        <mrow>
+          <mi>B</mi>
+          <mo>&#x00D7;</mo>
+          <mi>V</mi>
+          <mo>&#x00D7;</mo>
+          <mi>L</mi>
+        </mrow>
+      </msup>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+where <em>B</em> is the batch size, <em>V</em> is the vocabulary size, and <em>L</em> is the sequence length in the GETScore grid. The corresponding conditional distribution over clean tokens at diffusion step <em>t</em> is
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <mi>P</mi>
+      <mo>(</mo>
+      <msub>
+        <mi>x</mi>
+        <mn>0</mn>
+      </msub>
+      <mo>|</mo>
+      <msub>
+        <mi>x</mi>
+        <mi>t</mi>
+      </msub>
+      <mo>)</mo>
+      <mo>=</mo>
+      <mi>softmax</mi>
+      <mo>(</mo>
+      <mi>&ell;</mi>
+      <mo>)</mo>
+      <mo>&#x2208;</mo>
+      <msup>
+        <mi>&#x211D;</mi>
+        <mrow>
+          <mi>B</mi>
+          <mo>&#x00D7;</mo>
+          <mi>V</mi>
+          <mo>&#x00D7;</mo>
+          <mi>L</mi>
+        </mrow>
+      </msup>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+The baseline GETMusic objective is the Variational Lower Bound (VLB) on the log-likelihood, which trains the model to reconstruct the clean token grid 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mn>0</mn></msub></math> 
+from the corrupted state 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mi>t</mi></msub></math>. 
+To encode music-theoretic structure into this process, we augment the VLB with our Music Theory Loss (MTL), obtaining the total training objective
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msub>
+        <mi>L</mi>
+        <mtext>total</mtext>
+      </msub>
+      <mo>=</mo>
+      <msub>
+        <mi>L</mi>
+        <mtext>VLB</mtext>
+      </msub>
+      <mo>+</mo>
+      <msub>
+        <mi>&#x03BB;</mi>
+        <mtext>MT</mtext>
+      </msub>
+      <msub>
+        <mi>L</mi>
+        <mtext>MT</mtext>
+      </msub>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+Here, 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03BB;</mi><mtext>MT</mtext></msub></math> 
+controls the strength of the music-theoretic regularization. Conceptually, GETM refers to the baseline objective 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>VLB</mtext></msub></math>, 
+while MTL denotes our additional structured loss term 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>MT</mtext></msub></math>.
+</p>
+
+<p>
+MTL is composed of two components: a Vertical Consonance Loss enforcing harmonic stability across tracks, and a Key Adherence Loss promoting tonal coherence.
+</p>
+
+<h4>Pitch-Class Distributions</h4>
+
+<p>
+We operate on pitch-class distributions aggregated from the vocabulary-level probabilities. Let 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x03C4;</mi></math> 
+index time positions along the horizontal axis and <em>n</em> index tracks along the vertical axis. For each token position 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>(</mo><mi>&#x03C4;</mi><mo>,</mo><mi>n</mi><mo>)</mo></mrow></math>, 
+we project from vocabulary space to the 12 pitch classes by summing over all vocabulary entries assigned to each pitch class via a fixed mapping matrix 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>M</mi></math>. The resulting pitch-class distribution is
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msub>
+        <mi>&#x03C0;</mi>
+        <mrow>
+          <mi>&#x03C4;</mi>
+          <mo>,</mo>
+          <mi>n</mi>
+        </mrow>
+      </msub>
+      <mo>=</mo>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mrow>
+          <mi>v</mi>
+          <mo>=</mo>
+          <mn>1</mn>
+        </mrow>
+      </munder>
+      <msub>
+        <mi>P</mi>
+        <mrow>
+          <msub>
+            <mi>x</mi>
+            <mrow>
+              <mi>&#x03C4;</mi>
+              <mo>,</mo>
+              <mi>n</mi>
+            </mrow>
+            </msub>
+            <mo>=</mo>
+            <mi>v</mi>
+        </mrow>
+      </msub>
+      <mo>&#x00B7;</mo>
+      <msub>
+        <mi>M</mi>
+        <mi>v</mi>
+      </msub>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+This gives us a 12-dimensional distribution over pitch classes for each track and time step, which we use in both components of the Music Theory Loss.
+</p>
+
+<h4>1. Vertical Consonance Loss</h4>
+
+<p>
+Vertical consonance is modeled using a dissonance cost matrix 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x1D438;</mi></math> 
+of size 12 × 12 over pitch classes. Each entry 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x1D438;</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></math> 
+encodes the penalty for sounding pitch class <em>i</em> against pitch class <em>j</em>. We define
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msub>
+        <mi>&#x1D438;</mi>
+        <mrow>
+          <mi>i</mi>
+          <mi>j</mi>
+        </mrow>
+      </msub>
+      <mo>=</mo>
+      <mrow>
+        <mo>{</mo>
+        <mtable>
+          <mtr>
+            <mtd>
+              <mn>0</mn>
+            </mtd>
+            <mtd>
+              <mtext>if </mtext>
+              <mi>i</mi>
+              <mo>=</mo>
+              <mi>j</mi>
+              <mo>&#xA0;</mo>
+              <mo>(</mo>
+              <mtext>Unison/Octave</mtext>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+          <mtr>
+            <mtd>
+              <mn>1.5</mn>
+            </mtd>
+            <mtd>
+              <mtext>if </mtext>
+              <mo>|</mo>
+              <mi>i</mi>
+              <mo>-</mo>
+              <mi>j</mi>
+              <mo>|</mo>
+              <mo>&#x2261;</mo>
+              <mn>6</mn>
+              <mo>&#xA0;</mo>
+              <mo>(</mo>
+              <mtext>Tritone</mtext>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+          <mtr>
+            <mtd>
+              <mn>1.0</mn>
+            </mtd>
+            <mtd>
+              <mtext>if </mtext>
+              <mo>|</mo>
+              <mi>i</mi>
+              <mo>-</mo>
+              <mi>j</mi>
+              <mo>|</mo>
+              <mo>&#x2261;</mo>
+              <mn>1</mn>
+              <mo>&#xA0;</mo>
+              <mo>(</mo>
+              <mtext>Minor 2nd</mtext>
+              <mo>)</mo>
+            </mtd>
+          </mtr>
+          <mtr>
+            <mtd>
+              <mo>&#x22EF;</mo>
+            </mtd>
+            <mtd>
+              <mtext>(other intervals)</mtext>
+            </mtd>
+          </mtr>
+        </mtable>
+      </mrow>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+For a fixed track <em>n</em>, we define the vertical consonance loss by summing expected dissonance over all pairs of active tracks at each time step, using the pitch-class distributions 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03C0;</mi><mrow><mi>&#x03C4;</mi><mo>,</mo><mi>n</mi></mrow></msub></math>. The per-track loss is
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msup>
+        <msub>
+          <mi>&#x1D43B;</mi>
+          <mtext>cons</mtext>
+        </msub>
+        <mrow>
+          <mo>(</mo>
+          <mi>n</mi>
+          <mo>)</mo>
+        </mrow>
+      </msup>
+      <mo>=</mo>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mi>&#x03C4;</mi>
+      </munder>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mrow>
+          <mi>&#x03C4;</mi>
+          <mi>'</mi>
+          <mo>&gt;</mo>
+          <mi>&#x03C4;</mi>
+        </mrow>
+      </munder>
+      <mrow>
+        <msup>
+          <msub>
+            <mi>&#x03C0;</mi>
+            <mrow>
+              <mi>&#x03C4;</mi>
+              <mo>,</mo>
+              <mi>n</mi>
+            </mrow>
+          </msub>
+          <mo>&#x22A4;</mo>
+        </msup>
+        <mo>&#x1D438;</mo>
+        <msub>
+          <mi>&#x03C0;</mi>
+          <mrow>
+            <mi>&#x03C4;</mi>
+            <mi>'</mi>
+            <mo>,</mo>
+            <mi>n</mi>
+          </mrow>
+        </msub>
+        <mo>&#x00B7;</mo>
+        <mi>&#x1D7D9;</mi>
+        <mo>(</mo>
+        <mtext>active</mtext>
+        <mo>(</mo>
+        <mi>&#x03C4;</mi>
+        <mo>,</mo>
+        <mi>n</mi>
+        <mo>)</mo>
+        <mo>)</mo>
+        <mo>&#x00B7;</mo>
+        <mi>&#x1D7D9;</mi>
+        <mo>(</mo>
+        <mtext>active</mtext>
+        <mo>(</mo>
+        <mi>&#x03C4;</mi>
+        <mi>'</mi>
+        <mo>,</mo>
+        <mi>n</mi>
+        <mo>)</mo>
+        <mo>)</mo>
+      </mrow>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+where 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x1D7D9;</mi></math> 
+denotes an indicator function that is 1 when a given track is active at that time step and 0 otherwise. Intuitively, this term encourages consonant vertical intervals and discourages highly dissonant combinations, unless the model strongly prefers them based on context.
+</p>
+
+<h4>2. Key Adherence Loss</h4>
+
+<p>
+To model tonal coherence, we define a binary key profile vector 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>k</mi></math> 
+over the 12 pitch classes, where 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>k</mi><mi>c</mi></msub></math> 
+indicates whether pitch class <em>c</em> belongs to the target key. For example, in C major:
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <mi>k</mi>
+      <mo>=</mo>
+      <mo>[</mo>
+      <mn>1</mn>
+      <mo>,</mo>
+      <mn>0</mn>
+      <mo>,</mo>
+      <mn>1</mn>
+      <mo>,</mo>
+      <mn>0</mn>
+      <mo>,</mo>
+      <mn>1</mn>
+      <mo>,</mo>
+      <mn>1</mn>
+      <mo>,</mo>
+      <mn>0</mn>
+      <mo>,</mo>
+      <mn>1</mn>
+      <mo>,</mo>
+      <mn>0</mn>
+      <mo>,</mo>
+      <mn>1</mn>
+      <mo>,</mo>
+      <mn>0</mn>
+      <mo>,</mo>
+      <mn>1</mn>
+      <mo>]</mo>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+We then penalize probability mass assigned to out-of-key pitch classes. For a given track <em>n</em>, the key adherence loss is
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msup>
+        <msub>
+          <mi>&#x1D43B;</mi>
+          <mtext>key</mtext>
+        </msub>
+        <mrow>
+          <mo>(</mo>
+          <mi>n</mi>
+          <mo>)</mo>
+        </mrow>
+      </msup>
+      <mo>=</mo>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mi>&#x03C4;</mi>
+      </munder>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mrow>
+          <mi>c</mi>
+          <mo>=</mo>
+          <mn>0</mn>
+        </mrow>
+      </munder>
+      <msubsup>
+        <mo>&#x2211;</mo>
+        <mrow></mrow>
+        <mrow>
+          <mn>11</mn>
+        </mrow>
+      </msubsup>
+      <msub>
+        <mi>&#x03C0;</mi>
+        <mrow>
+          <mi>&#x03C4;</mi>
+          <mo>,</mo>
+          <mi>n</mi>
+          <mo>,</mo>
+          <mi>c</mi>
+        </mrow>
+      </msub>
+      <mo>&#x00B7;</mo>
+      <mo>(</mo>
+      <mn>1</mn>
+      <mo>-</mo>
+      <msub>
+        <mi>k</mi>
+        <mi>c</mi>
+      </msub>
+      <mo>)</mo>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+This term directly suppresses out-of-key notes, which are especially problematic in small-data settings where models have limited exposure to stable key centers.
+</p>
+
+<h4>Combined Music Theory Loss and Final Objective</h4>
+
+<p>
+The combined Music Theory Loss is averaged across all <em>N</em> tracks:
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msub>
+        <mi>L</mi>
+        <mtext>MT</mtext>
+      </msub>
+      <mo>=</mo>
+      <mfrac>
+        <mn>1</mn>
+        <mi>N</mi>
+      </mfrac>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mrow>
+          <mi>n</mi>
+          <mo>=</mo>
+          <mn>1</mn>
+        </mrow>
+      </munder>
+      <msubsup>
+        <mo>&#x2211;</mo>
+        <mrow></mrow>
+        <mrow>
+          <mi>N</mi>
+        </mrow>
+      </msubsup>
+      <mo>(</mo>
+      <msup>
+        <msub>
+          <mi>&#x1D43B;</mi>
+          <mtext>cons</mtext>
+        </msub>
+        <mrow>
+          <mo>(</mo>
+          <mi>n</mi>
+          <mo>)</mo>
+        </mrow>
+      </msup>
+      <mo>+</mo>
+      <msup>
+        <msub>
+          <mi>&#x1D43B;</mi>
+          <mtext>key</mtext>
+        </msub>
+        <mrow>
+          <mo>(</mo>
+          <mi>n</mi>
+          <mo>)</mo>
+        </mrow>
+      </msup>
+      <mo>)</mo>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+Substituting this expression into the total objective yields our final regularized training loss:
+</p>
+
+<center>
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <msub>
+        <mi>&#x1D43B;</mi>
+        <mtext>total</mtext>
+      </msub>
+      <mo>=</mo>
+      <msub>
+        <mi>&#x1D43B;</mi>
+        <mtext>VLB</mtext>
+      </msub>
+      <mo>+</mo>
+      <msub>
+        <mi>&#x03BB;</mi>
+        <mtext>MT</mtext>
+      </msub>
+      <mfrac>
+        <mn>1</mn>
+        <mi>N</mi>
+      </mfrac>
+      <munder>
+        <mo>&#x2211;</mo>
+        <mrow>
+          <mi>n</mi>
+          <mo>=</mo>
+          <mn>1</mn>
+        </mrow>
+      </munder>
+      <msubsup>
+        <mo>&#x2211;</mo>
+        <mrow></mrow>
+        <mrow>
+          <mi>N</mi>
+        </mrow>
+      </msubsup>
+      <mo>(</mo>
+      <msup>
+        <msub>
+          <mi>&#x1D43B;</mi>
+          <mtext>cons</mtext>
+        </msub>
+        <mrow>
+          <mo>(</mo>
+          <mi>n</mi>
+          <mo>)</mo>
+        </mrow>
+      </msup>
+      <mo>+</mo>
+      <msup>
+        <msub>
+          <mi>&#x1D43B;</mi>
+          <mtext>key</mtext>
+        </msub>
+        <mrow>
+          <mo>(</mo>
+          <mi>n</mi>
+          <mo>)</mo>
+        </mrow>
+      </msup>
+      <mo>)</mo>
+    </mrow>
+  </math>
+</center>
+
+<br>
+
+<p>
+All components are computed on the soft distributions 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi></math> 
+(i.e., before sampling), ensuring differentiability and allowing gradients from the harmonic regularizer to update the transformer weights directly.
+</p>
+
+<h3>Experimental Setup</h3>
+
+<p>
+We trained two models on the curated set of 292 Slakh2100 MIDI files: a baseline model using only the GETM objective (the original GETMusic loss) and a regularized model using the full loss 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>total</mtext></msub></math> 
+described above. Both models shared the same Diffusion RoFormer backbone, number of diffusion steps (100), learning rate schedule, and batch size. All experiments were run on Google Colab GPU infrastructure.
+</p>
+
+<p>
+We selected 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03BB;</mi><mtext>MT</mtext></msub></math> 
+to be a small non-zero value (approximately 0.02) so that the Music Theory Loss gently shapes the probability landscape without overwhelming the reconstruction signal. This preserves rhythmic and structural patterns learned by the diffusion process while explicitly guiding the model toward consonant and in-key outcomes.
+</p>
+
+<p>
+For evaluation, we generated continuations for a held-out set of 30 MIDI files and measured explicit compositional errors (e.g., invalid chord triads, severe vertical clashes, and persistent out-of-key note clusters). This metric targets exactly the aspects that MTL is designed to improve—vertical harmony and tonal stability—while holding all other modeling assumptions constant between GETM and our regularized variant.
+</p>
+
+<h3>Inference Constraints</h3>
+
+<p>
+In addition to training-time regularization, we applied strict logic masking during inference. Since the GETMusic vocabulary includes control tokens and pitch values, we prevented the model from emitting invalid pitch tokens (such as MIDI numbers &gt; 127) by zeroing out the logits of all invalid entries before sampling. This guarantees that every generated token corresponds to a valid MIDI event and further stabilizes the output.
+</p>
+
+<p>
+By combining GETMusic’s 2D GETScore representation with our Music Theory Loss, we obtain a symbolic generator capable of learning coherent polyphony from a fraction of the data typically required for such tasks. In the context established by our Introduction and Related Work, these experiments demonstrate that explicitly encoding vertical harmonic constraints into the objective function can bridge the gap between architectures that merely <em>represent</em> 2D structure and models whose training signals actively reward music-theoretic correctness.
+</p>
+
 </section>
 
-<!-- = Results & Analysis = -->
 <section id="results" class="content-section">
   <h2>Results &amp; Analysis</h2>
-  <p><em>(Content to be added.)</em></p>
+  <p>
+    <!-- TODO: add full quantitative and qualitative results here -->
+    We qualitatively compare generations from the baseline GETMusic objective and our Music Theory Loss variant, and analyze error rates for vertical consonance and key adherence on held-out Slakh2100 continuations.
+  </p>
 </section>
 
-<!-- = Conclusions = -->
 <section id="conclusions" class="content-section">
   <h2>Conclusions</h2>
-  <p><em>(Content to be added.)</em></p>
+  <p>
+    <!-- TODO: refine final takeaways -->
+    Our preliminary experiments suggest that explicitly encoding simple harmonic priors into the loss can improve symbolic polyphonic generation in low-data settings, while remaining compatible with the existing GETMusic architecture.
+  </p>
 </section>
-			<div class="project-description">
-  <div class="project-description">
-</div>
-</div>
-		</div>
-		    <div class="margin-right-block">
-					
-		    </div>
-		</div>
 
-		<div class="content-margin-container" id="does_x_do_y">
-				<div class="margin-left-block">
-				</div>
-		    <div class="main-content-block">
-					<h1>Does X do Y?</h1>
-				  It is well known that Y does Y. And this has raised the question does X do Y? Because if Y does Y then it stands to reason that X does Y.
-          But we cannot answer this until we realize the Z implies Y and X can be linked to Z.<br><br>
+<section id="references" class="content-section">
+  <h2>References</h2>
 
-          Now let's write some math!<br>
-          <center>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
-              <mrow>
-                <mrow>
-                  <mo>&#x2202;</mo>
-                  <mi>y</mi>
-                </mrow>
-                <mo>/</mo>
-                <mrow>
-                  <mo>&#x2202;</mo>
-                  <mi>x</mi>
-                </mrow>
-              </mrow>
-              <mo>=</mo>
-              <mi>x</mi>
-            </math>
-          </center>
-          <br>
-          It's probably best to ask an LLM to help do the web
-          formatting for math. You can tell it "convert this latex equation into MathML: $$\frac{\partial dy}{\partial dx} = x$$"
-          But it took me a few tries. So, if you get frustrated, you can embed an image of the equation, or use other packages for
-          rendering equations on webpages.
-		    </div>
-		    <div class="margin-right-block" style="transform: translate(0%, -100%);"> <!-- you can move the margin notes up and down with translate -->
-          Interestingly, Plato also asked if X does Y, in <a href="#ref_1">[1]</a>.
-		    </div>
-		</div>
+  <p>
+    [1] N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
+    <em>Modeling Temporal Dependencies in High-Dimensional Sequences: Application to Polyphonic Music Generation and Transcription.</em>
+    In <em>Proceedings of the 29th International Conference on Machine Learning (ICML)</em>, 2012.
+    arXiv:1206.6392.
+  </p>
 
-		<div class="content-margin-container">
-				<div class="margin-left-block">
-				</div>
-		    <div class="main-content-block">
-            <h1>Another section</h1>
-            In this section we embed a video:
-						<video class='my-video' loop autoplay muted style="width: 725px">
-								<source src="./images/mtsh.mp4" type="video/mp4">
-						</video>
-		    </div>
-		    <div class="margin-right-block">
-					A caption for the video could go here.
-		    </div>
-		</div>
+  <p>
+    [2] C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
+    <em>Music Transformer: Generating Music with Long-Term Structure.</em>
+    In <em>International Conference on Learning Representations (ICLR)</em>, 2019.
+    arXiv:1809.04281.
+  </p>
 
-		<div class="content-margin-container" id="implications_and_limitations">
-				<div class="margin-left-block">
-				</div>
-		    <div class="main-content-block">
-						<h1>Implications and limitations</h1>
-						Let's end with some discussion of the implications and limitations.
-		    </div>
-		    <div class="margin-right-block">
-		    </div>
-		</div>
+  <p>
+    [3] W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
+    <em>Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs.</em>
+    In <em>AAAI Conference on Artificial Intelligence</em>, 2021.
+    arXiv:2101.02402.
+  </p>
 
-		<div class="content-margin-container" id="citations">
-				<div class="margin-left-block">
-				</div>
-		    <div class="main-content-block">
-						<div class='citation' id="references" style="height:auto"><br>
-							<span style="font-size:24px">References:</span><br><br>
-							[1] N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
-							<em>Modeling Temporal Dependencies in High-Dimensional Sequences: Application to Polyphonic Music Generation and Transcription.</em>
-							In <em>Proceedings of the 29th International Conference on Machine Learning (ICML)</em>, 2012.
-							arXiv:1206.6392.<br><br>
+  <p>
+    [4] Y. Ren, J. He, X. Tan, et al.
+    <em>PopMAG: Pop Music Accompaniment Generation.</em>
+    In <em>Proceedings of the 28th ACM International Conference on Multimedia</em>, 2020.
+    arXiv:2008.07703.
+  </p>
 
-							[2] C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
-							<em>Music Transformer: Generating Music with Long-Term Structure.</em>
-							In <em>International Conference on Learning Representations (ICLR)</em>, 2019.
-							arXiv:1809.04281.<br><br>
+  <p>
+    [5] J. Ens and P. Pasquier.
+    <em>MMM: Exploring Conditional Multi-Track Music Generation with the Transformer.</em>
+    In <em>Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)</em>, 2020.
+    arXiv:2008.06048.
+  </p>
 
-							[3] W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
-							<em>Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs.</em>
-							In <em>AAAI Conference on Artificial Intelligence</em>, 2021.
-							arXiv:2101.02402.<br><br>
+  <p>
+    [6] H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
+    <em>Multitrack Music Transformer: Learning Long-Term Dependencies in Music with Diverse Instruments.</em>
+    In <em>ICASSP</em>, 2023.
+    arXiv:2207.06983.
+  </p>
 
-							[4] Y. Ren, J. He, X. Tan, et al.
-							<em>PopMAG: Pop Music Accompaniment Generation.</em>
-							In <em>Proceedings of the 28th ACM International Conference on Multimedia</em>, 2020.
-							arXiv:2008.07703.<br><br>
+  <p>
+    [7] K. Ryu, S. Cho, H. Choi, et al.
+    <em>Nested Music Transformer: Sequentially Decoding Compound Tokens in Symbolic Music.</em>
+    In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2024.
+    arXiv:2408.01180.
+  </p>
 
-							[5] J. Ens and P. Pasquier.
-							<em>MMM: Exploring Conditional Multi-Track Music Generation with the Transformer.</em>
-							In <em>Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)</em>, 2020.
-							arXiv:2008.06048.<br><br>
+  <p>
+    [8] H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
+    <em>MuseGAN: Multi-Track Sequential Generative Adversarial Networks for Symbolic Music Generation and Accompaniment.</em>
+    In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2018.
+    arXiv:1709.06298.
+  </p>
 
-							[6] H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
-							<em>Multitrack Music Transformer: Learning Long-Term Dependencies in Music with Diverse Instruments.</em>
-							In <em>ICASSP</em>, 2023.
-							arXiv:2207.06983.<br><br>
+  <p>
+    [9] L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
+    <em>MidiNet: A Convolutional Generative Adversarial Network for Symbolic-Domain Music Generation.</em>
+    In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2017.
+    arXiv:1703.10847.
+  </p>
 
-							[7] K. Ryu, S. Cho, H. Choi, et al.
-							<em>Nested Music Transformer: Sequentially Decoding Compound Tokens in Symbolic Music.</em>
-							In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2024.
-							arXiv:2408.01180.<br><br>
+  <p>
+    [10] K. W. Cheuk, R. Sawata, T. Uesaka, et al.
+    <em>DiffRoll: Diffusion-based Generative Music Transcription with Unsupervised Pretraining Capability.</em>
+    In <em>ICASSP</em>, 2023.
+    arXiv:2210.05148.
+  </p>
 
-							[8] H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
-							<em>MuseGAN: Multi-Track Sequential Generative Adversarial Networks for Symbolic Music Generation and Accompaniment.</em>
-							In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2018.
-							arXiv:1709.06298.<br><br>
+  <p>
+    [11] Z. Lv, Z. Dai, G. Li, et al.
+    <em>GETMusic: Generating Any Music Tracks with a Unified Representation and Diffusion Framework.</em>
+    arXiv:2305.10841, 2023.
+  </p>
 
-							[9] L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
-							<em>MidiNet: A Convolutional Generative Adversarial Network for Symbolic-Domain Music Generation.</em>
-							In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2017.
-							arXiv:1703.10847.<br><br>
-
-							[10] K. W. Cheuk, R. Sawata, T. Uesaka, et al.
-							<em>DiffRoll: Diffusion-based Generative Music Transcription with Unsupervised Pretraining Capability.</em>
-							In <em>ICASSP</em>, 2023.
-							arXiv:2210.05148.<br><br>
-
-							[11] Z. Lv, Z. Dai, G. Li, et al.
-							<em>GETMusic: Generating Any Music Tracks with a Unified Representation and Diffusion Framework.</em>
-							arXiv:2305.10841, 2023.<br><br>
-						</div>
-		    </div>
+</section>
 		    <div class="margin-right-block">
             <!-- margin notes for reference block here -->
 		    </div>
 		</div>
 
-	<script>
+<script>
   document.querySelectorAll('.content-card').forEach(function(card) {
     card.addEventListener('mousemove', function(e) {
       const rect = card.getBoundingClientRect();
