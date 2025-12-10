@@ -34,7 +34,7 @@
         margin: 0 auto;
         padding: 40px 18px 80px;
         display: grid;
-        grid-template-columns: 180px minmax(0, 1fr) 180px;
+        grid-template-columns: 180px minmax(0, 1fr);
         gap: 28px;
         align-items: start;
       }
@@ -592,14 +592,20 @@
           </p>
           <p>
             <strong>Original loss:</strong><br />
-            &gt;&gt; snippet 1
+            <audio controls>
+              <source src="./images/baseline_sample_trim.wav" type="audio/wav">
+              Your browser does not support the audio element.
+            </audio>
           </p>
           <p>
             <strong>Music theory-based loss:</strong><br />
-            &gt;&gt; snippet 2
+            <audio controls>
+              <source src="./images/new_sample_trim.wav" type="audio/wav">
+              Your browser does not support the audio element.
+            </audio>
           </p>
           <p>
-            Here, we can see that the model using a music theory-based loss function does a better job of maintaining…[yap].
+            In this example, we can see that the model using a music theory-based loss function does a slightly better job of generating a leading melody which maintains coherent vertical harmony. However, given the sparsity of data and difficulty in objectively evaluating something as subjective asmusic, we turn to quantitative metrics.
           </p>
 
           <h3>Quantitative</h3>
@@ -638,6 +644,15 @@
           <h2 id="conclusion-title" class="toc-linked">Conclusions</h2>
           <p>
             Our preliminary experiments suggest that explicitly encoding simple harmonic priors into the loss can improve symbolic polyphonic generation in low-data settings, while remaining compatible with the existing GETMusic architecture.
+          </p>
+          <p>
+            A key limitation of our current setup is the capacity/data mismatch: the architecture is quite powerful relative to the amount of high-quality symbolic data we were able to curate. In practice, scaling the dataset is non-trivial; finding open source data, cleaning MIDI files, and normalizing instrumentation proved to be some of the most technically challenging aspects of our process. Despite adding stronger inductive biases to partially compensate for limited data, these constraints still cap how reliably the model can internalize harmonic structure.
+          </p>
+          <p>
+            Going forward, we see several directions. First, we plan to broaden the family of music-theory loss terms beyond the current key-adherence–style regularizer, including transposition-invariance losses that encourage similar predictions under global key shifts, discouraging extreme leaps, chord and progression losses based on functional harmony or circle-of-fifths proximity, as well as metrical and phrasing losses, such as downbeat chord stability, and preference for chord changes on strong beats. Second, our evaluation was constrained by the stylistic and structural limitations of the datasets we used. Because our training data focused on a narrow range of genres and track configurations, we were unable to exploit the rich diversity found in classical corpora such as Bach chorales, SATB a cappella scores, or multi-instrument orchestral datasets. Likewise, our testing primarily centered on a fixed subset of tracks, leaving rhythmic components—especially drums—underexplored. Broadening the stylistic scope and incorporating datasets with more varied harmonic and rhythmic profiles would likely improve the model's ability to generalize across musical textures.
+          </p>
+          <p>
+            By systematically tuning these weights and progressively enriching the theory-aware loss portfolio—while also investing in larger, cleaner symbolic corpora—we expect future iterations to make more consistent use of musical structure, even under data-constrained settings.
           </p>
         </section>
 
@@ -727,16 +742,6 @@
         </section>
       </main>
 
-      <aside class="sidenotes" aria-label="Sidenotes">
-        <p class="sidenote-title">Sidenotes</p>
-        <ol>
-          <li>Use this column for brief comments or reminders if you like.</li>
-          <li>
-            You can safely delete the sidenotes block if you prefer an even
-            simpler layout.
-          </li>
-        </ol>
-      </aside>
     </div>
   </body>
 </html>
