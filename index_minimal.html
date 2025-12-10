@@ -25,7 +25,7 @@
         margin: 0;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
         color: var(--text);
-        background: radial-gradient(circle at top left, #f9fafb 0%, #e5e7eb 40%, #d1d5db 100%);
+        background: #f9fafb;
         line-height: 1.7;
       }
 
@@ -90,6 +90,31 @@
         font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
           "Helvetica Neue", Arial, sans-serif;
         letter-spacing: 0.03em;
+        position: relative;
+        padding-right: 44px;
+      }
+
+      .repo-link {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #ffffff;
+        color: #000000;
+        text-decoration: none;
+      }
+
+      .repo-link svg {
+        width: 22px;
+        height: 22px;
+        fill: currentColor;
       }
 
       .meta {
@@ -328,7 +353,28 @@
       <main class="content">
         <header>
           <p class="kicker">6.7960 Deep Learning Final Project</p>
-          <h1>Music-Theory Informed Loss for Polyphonic MIDI Generation with Transformer Diffusion Models</h1>
+          <h1>
+            Music-Theory Informed Loss for Polyphonic MIDI<br />
+            Generation with Transformer Diffusion Models
+            <a
+              class="repo-link"
+              href="https://github.com/mihikadusad/music-theory-loss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View project on GitHub"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.54 5.47 7.59.4.07.55-.17.55-.38
+                  0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                  -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+                  0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27
+                  1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                  0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+            </a>
+          </h1>
           <p class="meta">
             <span style="font-weight:500;">Authors:</span>
             <a href="https://github.com/mihikadusad"><strong>Mihika Dusad</strong></a>
