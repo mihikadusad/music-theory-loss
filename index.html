@@ -1,1470 +1,807 @@
-<html>
-<head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Music-Theory Informed Loss (Minimal)</title>
+    <style>
+      :root {
+        --text: #000000;
+        --muted: #4b5563;
+        --border: #d1d5db;
+        --accent: #000000;
+        --bg: #f3f4f6;
+      }
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+      * {
+        box-sizing: border-box;
+      }
 
-<link rel="shortcut icon" href="images/icon.ico">
-<style type="text/css">
-  * {
-    box-sizing: border-box;
-  }
+      html {
+        position: relative;
+      }
 
-	body {
-		background: radial-gradient(circle at top left, #f3f4f6 0%, #d6d8dc 40%, #b3b6bb 100%);
-		color: #CFCFCF;
-		margin: 0;
-		padding: 40px 0;
-		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-	}
+      body {
+        margin: 0;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+        color: var(--text);
+        background: #f9fafb;
+        line-height: 1.7;
+      }
 
-	/* Hide both math displays initially, will display based on JS detection */
-  .mathjax-mobile, .mathml-non-mobile { display: none; }
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 18px 80px;
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
 
-  /* Show the MathML content by default on non-mobile devices */
-  .show-mathml .mathml-non-mobile { display: block; }
-  .show-mathjax .mathjax-mobile { display: block; }
+      main {
+        padding: 0;
+      }
 
-	/* Make sure this selector has the dot; yours above was missing it */
-	.content-section {
-		margin: 3rem auto;
-		max-width: 900px;
-		padding: 0 1.25rem;
-	}
-	/* Reduce or increase the gap above the very first section */
-.content-section:first-of-type {
-  margin-top: 1.5rem;  /* tweak this up/down to taste */
-}
+      header {
+        margin-bottom: 40px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
 
-/* White cards with black text */
-	.content-card {
-	  background: #ffffff;
-	  color: #000000;
-	  border-radius: 10px;
-	  border: 1px solid #000000;
-	  padding: 1.5rem 1.75rem;
-	  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-	  line-height: 1.6;
-	  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-	               Arial, sans-serif;
-	}
-/* Ensure card can host an overlay */
-.content-card {
-  position: relative;
-  overflow: hidden;
-}
+      /* Floating musical notes confined to the header/title area */
+      header::before {
+        content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
+        position: absolute;
+        top: 55%;
+        left: -40%;
+        width: 260%;
+        pointer-events: none;
+        font-size: 48px;
+        color: rgba(0, 0, 0, 0.12);
+        white-space: nowrap;
+        z-index: -1;
+        animation: float-notes-1 45s linear infinite;
+      }
 
-/* Disable previous radial glow overlay on cards */
-.content-card::before {
-	content: none;
-}
+      @keyframes float-notes-1 {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(40%);
+        }
+      }
 
-		/* Ensure lists match the card text styling */
-	.content-card p + p {
-		margin-top: 0.9rem;
-	}
+      .kicker {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 8px;
+      }
 
-	.content-card ul {
-		margin: 0.75rem 0 0.75rem 1.2rem;
-		padding-left: 1.1rem;
-	}
+      h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+        line-height: 1.2;
+        font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+          "Helvetica Neue", Arial, sans-serif;
+        letter-spacing: 0.03em;
+        position: relative;
+        padding-right: 44px;
+      }
 
-	.content-card li {
-		margin-bottom: 0.4rem;
-	}
+      .repo-link {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: #ffffff;
+        color: #000000;
+        text-decoration: none;
+      }
 
-		/* Optional: emphasize strong text but keep it black */
-	.content-card li strong {
-		font-weight: 600;
-		color: #000000;
-	}
+      .repo-link svg {
+        width: 22px;
+        height: 22px;
+        fill: currentColor;
+      }
 
-	.content-margin-container {
-		display: flex;
-		width: 100%;
-		justify-content: center;
-		align-items: flex-start;
-		margin-bottom: 32px;
-	}
+      .meta {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+      }
 
-	/* Fixed outline sidebar that no longer affects main card centering */
-	.outline-sidebar {
-		position: fixed;
-		top: 140px;
-		left: 40px;
-		max-width: 180px;
-		z-index: 2;
-	}
-	.content-section h2 {
-		position: relative;
-		padding-left: 2.3rem;  /* makes room for the note */
-		font-size: 1.8rem;
-		margin-bottom: 1rem;
-		letter-spacing: 0.02em;
-	}
+      h2 {
+        margin: 36px 0 12px;
+        font-size: 18px; /* non-outline section headings (e.g., Training Progress) */
+      }
 
-	/* White music note to the left of each section title */
-	.content-section h2::before {
-	content: "♪";
-	position: absolute;
-	left: -0.6rem;          /* offset a bit toward the black box edge */
-	top: 50%;
-	transform: translateY(-50%);
-	font-size: 1.5rem;
-	color: #000000;
-	opacity: 0.9;
-	pointer-events: none;
-	}
+      /* Larger style and music note icon for outline-linked sections */
+      h2.toc-linked {
+        font-size: 24px; /* key sections listed in the outline */
+      }
 
-	.main-content-block {
-	  width: 70%;
-	  max-width: 1100px;
-	  background-color: #ffffff;
-	  border-radius: 18px;
-	  padding: 24px 32px;
-	  box-shadow:
-	    0 14px 50px rgba(0,0,0,0.30);
-	  backdrop-filter: blur(18px);
-	  color: #000000;
-	  position: relative;
-	  z-index: 1;
-	  margin-left: auto;
-	  margin-right: auto;
-	}
+      h2.toc-linked::before {
+        content: "♪";
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 0.95em;
+        color: #000000;
+      }
 
-	.margin-left-block {
-		font-size: 14px;
-		width: 15%;
-		max-width: 130px;
-		margin-top: 16px;
-		margin-left: 10px;
-		text-align: left;
-		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-		padding: 5px;
-		color: #000000;
-	}
+      p {
+        margin: 0 0 16px;
+        font-size: 17px;
+      }
 
-	.margin-right-block {
-		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-		font-size: 14px;
-		width: 15%;
-		max-width: 130px;
-		position: relative;
-		text-align: left;
-		padding: 10px;
-		color: #000000;
-	}
+      ul, ol {
+        margin: 0 0 16px;
+        padding-left: 24px;
+      }
 
-	img {
-		max-width: 100%;
-		height: auto;
-		display: block;
-		margin: auto;
-		border-radius: 14px;
-		box-shadow: 0 0 0 rgba(0,0,0,0);
-		transform: translateY(0) scale(1);
-		transition:
-			transform 280ms ease,
-			box-shadow 280ms ease,
-			filter 280ms ease;
-	}
+      li {
+        margin-bottom: 8px;
+        font-size: 17px;
+      }
 
-	.my-video {
-		max-width: 100%;
-		height: auto;
-		display: block;
-		margin: auto;
-		border-radius: 18px;
-		box-shadow: 0 0 0 rgba(0,0,0,0);
-		transform: translateY(0) scale(1);
-		transition:
-			transform 280ms ease,
-			box-shadow 280ms ease,
-			filter 280ms ease;
-	}
+      img {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        margin-bottom: 12px;
+      }
 
-  /* Hide both video displays initially, will display based on JS detection */
-  .vid-mobile, .vid-non-mobile { display: none; }
+      figure {
+        margin: 24px 0;
+      }
 
-  /* Show the video content by default on non-mobile devices */
-  .show-vid-mobile .vid-mobile { display: block; }
-  .show-vid-non-mobile .vid-non-mobile { display: block; }
+      figcaption {
+        text-align: center;
+        font-size: 14px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
 
-	/* Image & video hover: subtle gray shadow */
-	img:hover,
-	.my-video:hover {
-		transform: translateY(-6px) scale(1.02);
-		box-shadow:
-			0 8px 20px rgba(0, 0, 0, 0.18),
-			0 0 0 1px rgba(207,207,207,0.18);
-		filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.18));
-	}
+      .figures-row {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        align-items: flex-start;
+        margin: 24px 0;
+        flex-wrap: wrap;
+      }
 
-	a:link,
-	a:visited {
-		color: #000000;
-		text-decoration: none;
-		font-weight: 500;
-		transition: color 180ms ease, text-shadow 180ms ease;
-	}
+      .figures-row figure {
+        flex: 1 1 0;
+        min-width: 280px;
+        margin: 0;
+      }
 
-	a:hover {
-		color: #000000;
-		text-shadow: none;
-	}
+      @media (max-width: 640px) {
+        .figures-row {
+          flex-direction: column;
+        }
+      }
 
-	h1 {
-		font-size: 24px;
-		margin-top: 4px;
-		margin-bottom: 14px;
-		color: #000000;
-		letter-spacing: 0.02em;
-	}
+      .equation {
+        margin: 16px 0;
+        padding: 12px 14px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow-x: auto;
+      }
 
-	table.header {
-		font-weight: 400;
-		font-size: 18px;
-		flex-grow: 1;
-		width: 100%;
-		max-width: 100%;
-		color: #000000;
-	}
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
 
-	.paper-title {
-		display: block;
-		font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-		font-size: 32px;
-		font-weight: 600;
-		letter-spacing: 0.03em;
-		color: #000000;
-		margin-bottom: 18px; /* controls space above author names */
-		background-color: #FFFFFF;
-	}
+      a:hover {
+        text-decoration: underline;
+      }
 
-	.paper-authors {
-		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-		font-size: 17px;
-		font-weight: 400;
-		color: #000000;
-	}
+      sup a {
+        font-size: 12px;
+      }
 
-	.paper-subtitle {
-		font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-		font-size: 16px;
-		color: #000000;
-		padding-top: 8px;
-	}
+      .references {
+        margin-top: 48px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
 
-	table td, table td * {
-	    vertical-align: middle;
-	    position: relative;
-	}
+      .references ol {
+        margin: 12px 0 0 18px;
+        padding: 0;
+      }
 
-	table.paper-code-tab {
-	    flex-shrink: 0;
-	    margin-left: 8px;
-	    margin-top: 8px;
-	    padding: 0px 0px 0px 8px;
-	    width: 290px;
-	    height: 150px;
-	}
+      .references li {
+        margin-bottom: 10px;
+      }
 
-	.layered-paper { /* modified from: http://css-tricks.com/snippets/css/layered-paper/ */
-		box-shadow:
-		        0px 0px 1px 1px rgba(0,0,0,0.35),
-		        5px 5px 0 0px #0D1017,
-		        5px 5px 1px 1px rgba(0,0,0,0.55);
-		margin-top: 5px;
-		margin-left: 10px;
-		margin-right: 30px;
-		margin-bottom: 5px;
-		border-radius: 16px;
-	}
+      .toc,
+      .sidenotes {
+        position: sticky;
+        top: 32px;
+        align-self: start;
+      }
 
-	hr {
-    height: 1px;
-    border: none;
-    background: linear-gradient(to right, rgba(77,80,87,0), rgba(207,207,207,0.7), rgba(77,80,87,0));
-  }
+      .toc {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 14px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      }
 
-	div.hypothesis {
-		width: 80%;
-		background: linear-gradient(135deg, #eef2f0 0%, #737672e9 100%);
-		border: 1px solid rgba(207,207,207,0.6);
-		border-radius: 16px;
-		font-family: "SF Mono", Menlo, Monaco, Consolas, "Courier New", Courier, monospace;
-		font-size: 18px;
-		text-align: center;
-		margin: auto;
-		padding: 16px 16px 16px 16px;
-		color: #0D1017;
-		box-shadow: 0 14px 40px rgba(0,0,0,0.5);
-	}
+      .toc-title,
+      .sidenote-title {
+        margin: 0 0 10px;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
 
-	div.citation {
-    font-size: 0.9em;
-    background-color:#ffffff;
-    padding: 14px;
-		height: 200px;
-		border-radius: 12px;
-		border: 1px solid rgba(207,207,207,0.2);
-  }
+      .toc ol {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
 
-	.fade-in-inline {
-		position: absolute;
-		text-align: center;
-		margin: auto;
-		-webkit-mask-image: linear-gradient(to right,
-																			transparent 0%,
-																			transparent 40%,
-																			black 50%,
-																			black 90%,
-																			transparent 100%);
-		mask-image: linear-gradient(to right,
-																transparent 0%,
-																transparent 40%,
-																black 50%,
-																black 90%,
-																transparent 100%);
-		-webkit-mask-size: 8000% 100%;
-		mask-size: 8000% 100%;
-		animation-name: sweepMask;
-		animation-duration: 4s;
-		animation-iteration-count: infinite;
-		animation-timing-function: linear;
-		animation-delay: -1s;
-	}
+      .toc li {
+        margin-bottom: 10px;
+        font-size: 15px;
+      }
 
-	.fade-in2-inline {
-			animation-delay: 1s;
-	}
+      .sidenotes {
+        padding: 12px 0;
+      }
 
-	.inline-div {
-			position: relative;
-	    display: inline-block;
-	    vertical-align: top;
-	    width: 50px;
-	}
-	.outline-title {
-  font-size: 1.1rem;      /* larger than body text */
-  font-weight: 600;
-  color: black;
-  letter-spacing: 0.02em;
-  margin-bottom: 0.75rem;
-}
+      .sidenotes ol {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-size: 15px;
+      }
 
-.outline-links a {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 0.7rem;        /* closer to normal text */
-  color: black;            /* a bit softer green */
-  text-decoration: none;
-  padding: 0.05rem 0;
-  border-radius: 3px;
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease,
-    transform 0.15s ease;
-}
+      .sidenotes li {
+        margin-bottom: 12px;
+      }
 
-/* Light green emphasis on hover/active */
-.outline-links a:hover {
-  color: #21222225;        /* light green text on hover */
-  background-color: transparent;   /* no dark green box */
-  transform: translateX(1px);  /* smaller nudge */
-}
-	.getmusic-figures-row {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  align-items: flex-start;
-  margin: 1.25rem 0 0.75rem;
-}
+      .sidenote-ref a {
+        font-size: 12px;
+        color: var(--muted);
+      }
 
-.getmusic-figure {
-  flex: 1 1 0;
-  margin: 0;
-}
+      @media (max-width: 1024px) {
+        .page {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
 
-.getmusic-figure img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  display: block;
-}
-	.paper-authors {
-  display: flex;
-  align-items: baseline;
-  gap: 0.7rem;        /* was 1.75rem */
-  font-size: 0.95rem;
-}
+        .toc,
+        .sidenotes {
+          position: relative;
+          top: auto;
+        }
+      }
 
-.authors-label {
-  text-transform: none;       /* keep normal capitalization */
-  letter-spacing: 0;          /* remove extra spacing between letters */
-  font-weight: 400;           /* lighter weight */
-  opacity: 0.8;               /* slightly dimmer than names */
-}
+      @media (max-width: 640px) {
+        .page {
+          padding: 28px 14px 60px;
+        }
 
-.author-name {
-  text-decoration: none;
-}
-	body {
-  position: relative;
-  overflow-x: hidden; /* avoid horizontal scroll from the animation */
-}
+        h1 {
+          font-size: 26px;
+        }
 
-html::before {
-  content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
-  position: fixed;
-  top: 8%;
-  left: -40%;
-  width: 260%;
-  pointer-events: none;
-  font-size: 52px;
-  color: rgba(0, 0, 0, 0.22);
-  white-space: nowrap;
-  z-index: 0;
-  animation: float-notes-1 45s linear infinite;
-}
-@keyframes float-notes-1 {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(40%); }
-}
-	@keyframes sweepMask {
-		0% { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
-		100% { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-	}
-
-	/* Animated button styles */
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 10px 20px;
-		border-radius: 999px;
-		border: 1px solid rgba(207,207,207,0.5);
-		background: radial-gradient(circle at top left, #4DA167, #3BC14A);
-		color: #0D1017;
-		font-size: 14px;
-		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		cursor: pointer;
-		box-shadow:
-			0 10px 25px rgba(0,0,0,0.6),
-			0 0 0 1px rgba(0,0,0,0.9);
-		position: relative;
-		overflow: hidden;
-		transition:
-			transform 160ms ease,
-			box-shadow 160ms ease,
-			background 200ms ease,
-			border-color 160ms ease;
-	}
-
-	.btn:hover {
-		transform: translateY(-2px) scale(1.02);
-		box-shadow:
-			0 18px 40px rgba(0,0,0,0.8),
-			0 0 0 1px rgba(207,207,207,0.8);
-		background: radial-gradient(circle at top left, #4E6E5D, #4DA167);
-		border-color: #CFCFCF;
-	}
-
-	.btn:active {
-		transform: translateY(1px) scale(0.98);
-		box-shadow:
-			0 8px 18px rgba(0,0,0,0.9),
-			0 0 0 1px rgba(207,207,207,0.6);
-	}
-
-	.btn::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background: radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, transparent 60%);
-		opacity: 0;
-		transform: scale(0);
-		transition: opacity 260ms ease, transform 260ms ease;
-		pointer-events: none;
-		mix-blend-mode: screen;
-	}
-
-	.btn:active::after {
-		opacity: 1;
-		transform: scale(1.6);
-	}
-</style>
-
-	  <title>The Platonic Representation Hypothesis</title>
-      <meta property="og:title" content="The Platonic Representation Hypothesis" />
-			<meta charset="UTF-8">
+        h2 {
+          font-size: 20px;
+        }
+      }
+    </style>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+        },
+        options: {
+          skipHtmlTags: [
+            "script",
+            "noscript",
+            "style",
+            "textarea",
+            "pre",
+            "code",
+          ],
+        },
+      };
+    </script>
+    <script
+      async
+      id="MathJax-script"
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
   </head>
-
   <body>
-
-		<!-- Fixed outline sidebar -->
-		<div class="outline-sidebar">
-			<div class="outline-title">Outline</div>
-			<nav class="outline-links">
-				<a href="#introduction">1) Introduction</a>
-				<a href="#related-work">2) Related work</a>
-				<a href="#methodology">3) Methodology &amp; Experiments</a>
-				<a href="#results">4) Results &amp; Analysis</a>
-				<a href="#conclusions">5) Conclusions</a>
-				<a href="#references">6) References</a>
-			</nav>
-		</div>
-
-		<div class="content-margin-container">
-		    <div class="main-content-block">
-						<table class="header" align="left">
-							<tr>
-								<td colspan="4">
-								<span class="paper-title">
-									Music-Theory Informed Loss for Polyphonic MIDI Generation with Transformer Diffusion Models
-								</span>
-								</td>
-							</tr>
-							<tr>
-								<td align="left" colspan="4" class="paper-authors">
-  <span class="authors-label">Authors:</span>
-  <a class="author-name" href="https://github.com/mihikadusad">Mihika Dusad</a>
-  <a class="author-name" href="https://github.com/victoriaxhu">Victoria Hu</a>
-</td>
-							</tr>
-							<tr>
-								<td colspan="4" align="left">
-								<span class="paper-subtitle">Final project for 6.7960, MIT</span>
-								</td>
-							</tr>
-						</table>
-					</div>
-		</div>
-
-		<div class="content-margin-container" id="intro">
-		    <div class="main-content-block">
-			<!-- ===================== Introduction ===================== -->
-<section id="introduction" class="content-section">
-  <h2>Introduction</h2>
-  <p class="introduction-content-section">
-    AI-guided audio generation efforts have become increasingly popular, both in research and in industry [https://arxiv.org/abs/2406.00146, https://suno.com/home]. However, there is a key distinction between training models to generate pure audio and compose music. The process of composing true playable pieces -- consisting of notes, rhythms, instruments, chords -- is referred to as symbolic music generation. For symbolic music generation, we train models to work with and generate MIDI (Musical Instrument Digital Interface) files, a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements. 
-  </p>
-  <p>
-Most current systems represent MIDIs as a single sequence of note events, forcing the model to implicitly discover 2D structure — melodic continuity, chord consistency, and voice independence — from flattened data. Despite improvements in tokenization schemes, these models often struggle to maintain stable voice lines or valid harmonic textures. In reality, polyphonic music is inherently two-dimensional: the horizontal axis reflects how melodies evolve over time, while the vertical axis captures the harmony formed by notes sounding together at each moment. Flattening this grid into a 1D sequence obscures both dimensions, making it significantly harder for models to learn coherent melodic motion and consistent chordal structure. One framework developed by Microsoft research, GETMusic, addresses this issue by converting MIDI inputs into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
-  </p>
-  <div class="getmusic-figures-row">
-    <figure class="getmusic-figure">
-      <img src="./images/getmusic1_1.png" alt="GETMusic representation example 1">
-    </figure>
-    <figure class="getmusic-figure">
-      <img src="./images/getmusic1_2.png" alt="GETMusic representation example 2">
-    </figure>
-  </div>
-  <p>
-We seek to build upon the GETMusic architecture by incorporating an explicit, music-theory-informed loss regularization term into the GETMusic framework to more reliably enforce vertical harmonic constraints. By aligning the objective function with known principles of polyphonic writing, we strengthen the inductive biases already present in GETMusic’s 2D representation and reduce the dependence on massive curated datasets. We aim to produce more coherent polyphonic outcomes, especially when training resources or datasets are limited.
-  </p>
-  <p>
-</section>
-
-<!-- = Related work = -->
-<section id="related-work" class="content-section">
-  <h2>Related work</h2>
-  <h3>Sequence-based symbolic models</h3>
-  <p>
-    Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures (Boulanger-Lewandowski et al., 2012)[1]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. In 2018, the transformer architecture was applied to music for the first time (Huang et al., 2018)[2], introducing relative positional self-attention for long-range structure, but encoding all notes—across hands or tracks—as a single 1D event stream. Here, vertical relationships (which notes sound together) were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
-  </p>
-  <p>Some other examples of modern symbolic music generators that interpret musical input as a single stream include:</p>
-  <ul>
-    <li>
-      <strong>Compound Word Transformer (CP-Transformer) (Hsiao et al., 2021)</strong>[3]: Groups attributes of a single note (pitch, duration, velocity, instrument) into compound tokens, shortening sequences and slightly tightening intra-note structure, but the representation remains a flat stream of notes.
-    </li>
-    <li>
-      <strong>PopMAG / MuMIDI (Ren et al., 2020)</strong>[4]: Proposes a multi-track sequence representation where track identity and chord information are encoded as token attributes. This allows multi-track accompaniment generation but further lengthens the sequence and still interleaves tracks in one stream.
-    </li>
-    <li>
-      <strong>MMM (Multi-Track Music Machine), MTMT (Multitrack Music Transformer), and Nested Music Transformer</strong> (Ens &amp; Pasquier, 2020; Dong et al., 2023; Ryu et al., 2024)[5–7]: Encode multi-track events as tuples (instrument, pitch, duration, etc.) that are then fully flattened into a 1D sequence.
-    </li>
-  </ul>
-  <p>
-    In these sequence-based models, harmony and voice-leading emerge from learned attention patterns over a long interleaved sequence. In practice, this creates well-known failure modes—voice crossing, unstable chord spacing, local dissonances, and loss of individual line identity—unless trained on a very large dataset and carefully regularized. Our work is motivated by this limitation: we aim to preserve the advantages of transformer-style modeling while moving towards representations and objectives that encode vertical structure more explicitly.
-  </p>
-
-  <h3>Image-based / 2D representations</h3>
-  <p>
-    A second family of methods abandons purely sequential representations and instead treats symbolic music as a 2D grid, usually a piano-roll with time on the horizontal axis and pitch on the vertical axis, sometimes with instrument tracks as channels. 
-  </p>
-  <ul>
-    <li>
-      <strong>MuseGAN (Dong et al., 2017/2018)</strong>[8]: Generates multi-track piano-roll tensors, where each bar is represented as a binary matrix of size (time steps × pitches × tracks). Convolutional GANs operate directly on this 2D (plus channels) structure, so vertical chords and cross-track combinations are local patterns in an “image” rather than dispersed tokens, yielding strong local harmonic textures but typically limited to bar-level phrases with GAN training instabilities and weak global structure.
-    </li>
-    <li>
-      <strong>MidiNet (Yang et al., 2017)</strong>[9]: Uses convolutional GANs to generate melody one bar at a time in piano-roll form, conditioned on both 1D sequences (chords) and 2D contexts (previous bars). While the vertical axis explicitly encodes chord content, the objective is still a generic adversarial loss over images rather than a music-theoretic notion of harmony.
-    </li>
-    <li>
-      <strong>DiffRoll (Cheuk et al., 2022)</strong>[10]: Employs diffusion to generate piano-rolls conditioned on audio spectrograms for automatic music transcription. The model denoises a 2D time-pitch grid of symbolic events from Gaussian noise, demonstrating that diffusion in a piano-roll space can capture realistic local harmonic patterns.
-    </li>
-  </ul>
-
-
-  <h3>GETMusic and 2D token grids</h3>
-  <p>
-    Architecturally, our work is closest to GETMusic (Lv et al., 2023)[11], which positions itself between transformer sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
-  </p>
-  <p>
-    A discrete diffusion model, GETDiff, denoises masked target tracks conditioned on source tracks in a non-autoregressive fashion, enabling flexible any-track-to-any-track generation and zero-shot infilling. Compared to piano-roll GANs/diffusion, GETScore avoids extremely large and sparse images while still making both horizontal continuity and vertical cross-track relationships spatially explicit. Compared to 1D event models such as PopMAG, it eliminates track interleaving: tracks are temporally aligned in a score-like grid rather than interwoven in a single stream.
-  </p>
-  <p>
-    However, GETMusic’s objective remains a purely statistical discrete diffusion loss plus auxiliary reconstruction terms. There is no explicit bias towards music-theoretic principles beyond what is implicitly encoded in the dataset and the compound-token construction. In fact, the authors emphasize that they crawled and cleaned over 1.5M MuseScore MIDIs (around 2,800 hours of data) to train GETMusic, underscoring its dependence on very large curated datasets to learn harmonic structure robustly.
-  </p>
-
-  <h3>Positioning our contribution</h3>
-  <p>
-    Our project builds directly on this GETMusic line of work: we retain a 2D symbolic representation and a diffusion-style transformer backbone, but modify the learning objective by adding a music-theory-informed regularization term that explicitly evaluates the vertical slice (local harmony and spacing at each time step). Rather than treating harmony as a purely emergent property of data and generic denoising, we encode constraints derived from polyphonic writing practice—for example, penalties for certain dissonant intervals or unstable chord spacings, and rewards for consonant interval structures and consistent voice ranges—and integrate them into the loss function calculation.
-  </p>
-</section>
-
-<!-- = Choosing GETMusic as a Baseline = -->
-<section id="getmusic-baseline" class="content-section">
-  <h2>Choosing GETMusic as a Baseline</h2>
-  <p>
-    GETMusic provides a structured 2D symbolic representation (GETScore) where tracks are vertically stacked and time flows horizontally, forming an image-like grid that naturally encodes harmony and polyphony. A discrete diffusion model, GETDiff, denoises corrupted versions of this grid using a RoFormer-based transformer. Condition flags mark which tracks are provided as input and which must be generated, allowing the same model to perform arbitrary source→target track generation. During training, source tracks remain fixed, target tracks diffuse toward a mask token, and uninvolved tracks are filled with an empty token.
-  </p>
-</section>
-
-<!-- = Architectural limitations = -->
-<section id="architectural-limitations" class="content-section">
-  <h2>Architectural limitations</h2>
-  <p>
-    Although GETMusic introduces a helpful structural bias—explicit tracks, time alignment, and compound pitch tokens—the diffusion objective itself is entirely generic. It simply learns to reconstruct clean tokens from noisy ones and contains no explicit music-theoretic constraints: no chord plausibility, harmonic consistency, or voice-leading structure is encoded in the loss. These properties must emerge purely from data, which is challenging given the large vocabulary and 100-step diffusion process. The original GETMusic work compensates with a massive, carefully curated dataset (~138k GETScores), but reproducing such scale is impractical for most.
-  </p>
-</section>
-
-<!-- = Motivation for our approach = -->
-<section id="motivation" class="content-section">
-  <h2>Motivation for our approach</h2>
-  <p>
-    Because GETMusic relies on data-driven learning rather than explicit musical structure, we introduce music-theory-informed regularizers that bias the model toward harmonically coherent vertical textures, improving chord structure without requiring a massive training corpus.
-  </p>
-</section>
-
-<!-- = Methodology & Experiments = -->
-<section id="methodology" class="content-section">
-
-<h2>Methodology &amp; Experiments</h2>
-
-<p>
-To validate our hypothesis that explicit music-theoretic constraints can improve polyphonic generation—particularly in data-constrained environments—we implemented our proposed regularization framework on top of the GETMusic architecture. Our goal is to determine whether injecting domain-specific inductive biases into a diffusion-based symbolic music generator enables coherent harmonic structure even when trained on only a few hundred examples. We therefore conducted controlled experiments comparing the original GETMusic loss (GETM) against our proposed Music Theory Loss (MTL), using identical training conditions and evaluation metrics.
-</p>
-
-<h3>Dataset and Preprocessing</h3>
-
-<p>
-We downloaded the open source Slakh2100 dataset, which largely focuses on pop music. It contains 1500 training tracks, 375 validation tracks, and 225 test tracks. Our preprocessing pipeline consisted of three major stages:
-</p>
-
-<p>
-<strong>1. Track Merging.</strong>
-We mapped Slakh's multi-instrument arrangements into the standardized 14-row GETScore layout (7 instruments × 2 attributes: pitch and duration). GETMusic supports the following instruments, labeled by their instrument code: '0': piano, '25':guitar, '32':bass, '48':string, '80':lead melody; along with drums and chord labels.
-</p>
-
-<p>
-<strong>2. Filtering.</strong>
-Each MIDI file is converted into GETMusic's event-based OCT representation, where note events are assigned to a fixed grid of discrete time steps determined by the model's bar and positional resolution. This mapping ensures that notes, durations, and positions align with the model's multi-track format. After conversion, events that fall outside supported instrument types, have zero durations, or violate representation constraints are filtered out. The final encoded sequence is then chunked or padded to fit the model's maximum sequence length of 512 tokens for training.
-</p>
-
-<p>
-<strong>3. Data Pruning.</strong>
-Tracks that lacked sufficient polyphonic content or fell below a minimum length threshold were removed. The resulting curated dataset consisted of <strong>292 MIDI files</strong>—dramatically smaller than the 1.5M files used by the original GETMusic authors. This constrained setting is intentional: our goal is to test whether explicit harmonic regularization can compensate for limited data, a regime where standard diffusion-based systems often fail.
-</p>
-
-<h3>Architecture and the Music Theory Loss</h3>
-
-<p>
-Our backbone model is the Diffusion RoFormer (Rotary Transformer) used in the GETMusic framework. Let the logits over the discrete vocabulary at each diffusion step be denoted by
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <mi>&ell;</mi>
-      <mo>&#x2208;</mo>
-      <msup>
-        <mi>&#x211D;</mi>
-        <mrow>
-          <mi>B</mi>
-          <mo>&#x00D7;</mo>
-          <mi>V</mi>
-          <mo>&#x00D7;</mo>
-          <mi>L</mi>
-        </mrow>
-      </msup>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-where <em>B</em> is the batch size, <em>V</em> is the vocabulary size, and <em>L</em> is the sequence length in the GETScore grid. The corresponding conditional distribution over clean tokens at diffusion step <em>t</em> is
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <mi>P</mi>
-      <mo>(</mo>
-      <msub>
-        <mi>x</mi>
-        <mn>0</mn>
-      </msub>
-      <mo>|</mo>
-      <msub>
-        <mi>x</mi>
-        <mi>t</mi>
-      </msub>
-      <mo>)</mo>
-      <mo>=</mo>
-      <mi>softmax</mi>
-      <mo>(</mo>
-      <mi>&ell;</mi>
-      <mo>)</mo>
-      <mo>&#x2208;</mo>
-      <msup>
-        <mi>&#x211D;</mi>
-        <mrow>
-          <mi>B</mi>
-          <mo>&#x00D7;</mo>
-          <mi>V</mi>
-          <mo>&#x00D7;</mo>
-          <mi>L</mi>
-        </mrow>
-      </msup>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-The baseline GETMusic objective is the Variational Lower Bound (VLB) on the log-likelihood, which trains the model to reconstruct the clean token grid 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mn>0</mn></msub></math> 
-from the corrupted state 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mi>t</mi></msub></math>. 
-To encode music-theoretic structure into this process, we augment the VLB with our Music Theory Loss (MTL), obtaining the total training objective
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msub>
-        <mi>L</mi>
-        <mtext>total</mtext>
-      </msub>
-      <mo>=</mo>
-      <msub>
-        <mi>L</mi>
-        <mtext>VLB</mtext>
-      </msub>
-      <mo>+</mo>
-      <msub>
-        <mi>&#x03BB;</mi>
-        <mtext>MT</mtext>
-      </msub>
-      <msub>
-        <mi>L</mi>
-        <mtext>MT</mtext>
-      </msub>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-Here, 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03BB;</mi><mtext>MT</mtext></msub></math> 
-controls the strength of the music-theoretic regularization. Conceptually, GETM refers to the baseline objective 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>VLB</mtext></msub></math>, 
-while MTL denotes our additional structured loss term 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>MT</mtext></msub></math>.
-</p>
-
-<p>
-MTL is composed of two components: a Vertical Consonance Loss enforcing harmonic stability across tracks, and a Key Adherence Loss promoting tonal coherence.
-</p>
-
-<h4>Pitch-Class Distributions</h4>
-
-<p>
-We operate on pitch-class distributions aggregated from the vocabulary-level probabilities. Let 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x03C4;</mi></math> 
-index time positions along the horizontal axis and <em>n</em> index tracks along the vertical axis. For each token position 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>(</mo><mi>&#x03C4;</mi><mo>,</mo><mi>n</mi><mo>)</mo></mrow></math>, 
-we project from vocabulary space to the 12 pitch classes by summing over all vocabulary entries assigned to each pitch class via a fixed mapping matrix 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>M</mi></math>. The resulting pitch-class distribution is
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msub>
-        <mi>&#x03C0;</mi>
-        <mrow>
-          <mi>&#x03C4;</mi>
-          <mo>,</mo>
-          <mi>n</mi>
-        </mrow>
-      </msub>
-      <mo>=</mo>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mrow>
-          <mi>v</mi>
-          <mo>=</mo>
-          <mn>1</mn>
-        </mrow>
-      </munder>
-      <msub>
-        <mi>P</mi>
-        <mrow>
-          <msub>
-            <mi>x</mi>
-            <mrow>
-              <mi>&#x03C4;</mi>
-              <mo>,</mo>
-              <mi>n</mi>
-            </mrow>
-            </msub>
-            <mo>=</mo>
-            <mi>v</mi>
-        </mrow>
-      </msub>
-      <mo>&#x00B7;</mo>
-      <msub>
-        <mi>M</mi>
-        <mi>v</mi>
-      </msub>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-This gives us a 12-dimensional distribution over pitch classes for each track and time step, which we use in both components of the Music Theory Loss.
-</p>
-
-<h4>1. Vertical Consonance Loss</h4>
-
-<p>
-Vertical consonance is modeled using a dissonance cost matrix 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x1D438;</mi></math> 
-of size 12 × 12 over pitch classes. Each entry 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x1D438;</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></math> 
-encodes the penalty for sounding pitch class <em>i</em> against pitch class <em>j</em>. We define
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msub>
-        <mi>&#x1D438;</mi>
-        <mrow>
-          <mi>i</mi>
-          <mi>j</mi>
-        </mrow>
-      </msub>
-      <mo>=</mo>
-      <mrow>
-        <mo>{</mo>
-        <mtable>
-          <mtr>
-            <mtd>
-              <mn>0</mn>
-            </mtd>
-            <mtd>
-              <mtext>if </mtext>
-              <mi>i</mi>
-              <mo>=</mo>
-              <mi>j</mi>
-              <mo>&#xA0;</mo>
-              <mo>(</mo>
-              <mtext>Unison/Octave</mtext>
-              <mo>)</mo>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mn>1.5</mn>
-            </mtd>
-            <mtd>
-              <mtext>if </mtext>
-              <mo>|</mo>
-              <mi>i</mi>
-              <mo>-</mo>
-              <mi>j</mi>
-              <mo>|</mo>
-              <mo>&#x2261;</mo>
-              <mn>6</mn>
-              <mo>&#xA0;</mo>
-              <mo>(</mo>
-              <mtext>Tritone</mtext>
-              <mo>)</mo>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mn>1.0</mn>
-            </mtd>
-            <mtd>
-              <mtext>if </mtext>
-              <mo>|</mo>
-              <mi>i</mi>
-              <mo>-</mo>
-              <mi>j</mi>
-              <mo>|</mo>
-              <mo>&#x2261;</mo>
-              <mn>1</mn>
-              <mo>&#xA0;</mo>
-              <mo>(</mo>
-              <mtext>Minor 2nd</mtext>
-              <mo>)</mo>
-            </mtd>
-          </mtr>
-          <mtr>
-            <mtd>
-              <mo>&#x22EF;</mo>
-            </mtd>
-            <mtd>
-              <mtext>(other intervals)</mtext>
-            </mtd>
-          </mtr>
-        </mtable>
-      </mrow>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-For a fixed track <em>n</em>, we define the vertical consonance loss by summing expected dissonance over all pairs of active tracks at each time step, using the pitch-class distributions 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03C0;</mi><mrow><mi>&#x03C4;</mi><mo>,</mo><mi>n</mi></mrow></msub></math>. The per-track loss is
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msup>
-        <msub>
-          <mi>&#x1D43B;</mi>
-          <mtext>cons</mtext>
-        </msub>
-        <mrow>
-          <mo>(</mo>
-          <mi>n</mi>
-          <mo>)</mo>
-        </mrow>
-      </msup>
-      <mo>=</mo>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mi>&#x03C4;</mi>
-      </munder>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mrow>
-          <mi>&#x03C4;</mi>
-          <mi>'</mi>
-          <mo>&gt;</mo>
-          <mi>&#x03C4;</mi>
-        </mrow>
-      </munder>
-      <mrow>
-        <msup>
-          <msub>
-            <mi>&#x03C0;</mi>
-            <mrow>
-              <mi>&#x03C4;</mi>
-              <mo>,</mo>
-              <mi>n</mi>
-            </mrow>
-          </msub>
-          <mo>&#x22A4;</mo>
-        </msup>
-        <mo>&#x1D438;</mo>
-        <msub>
-          <mi>&#x03C0;</mi>
-          <mrow>
-            <mi>&#x03C4;</mi>
-            <mi>'</mi>
-            <mo>,</mo>
-            <mi>n</mi>
-          </mrow>
-        </msub>
-        <mo>&#x00B7;</mo>
-        <mi>&#x1D7D9;</mi>
-        <mo>(</mo>
-        <mtext>active</mtext>
-        <mo>(</mo>
-        <mi>&#x03C4;</mi>
-        <mo>,</mo>
-        <mi>n</mi>
-        <mo>)</mo>
-        <mo>)</mo>
-        <mo>&#x00B7;</mo>
-        <mi>&#x1D7D9;</mi>
-        <mo>(</mo>
-        <mtext>active</mtext>
-        <mo>(</mo>
-        <mi>&#x03C4;</mi>
-        <mi>'</mi>
-        <mo>,</mo>
-        <mi>n</mi>
-        <mo>)</mo>
-        <mo>)</mo>
-      </mrow>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-where 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x1D7D9;</mi></math> 
-denotes an indicator function that is 1 when a given track is active at that time step and 0 otherwise. Intuitively, this term encourages consonant vertical intervals and discourages highly dissonant combinations, unless the model strongly prefers them based on context.
-</p>
-
-<h4>2. Key Adherence Loss</h4>
-
-<p>
-To model tonal coherence, we define a binary key profile vector 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>k</mi></math> 
-over the 12 pitch classes, where 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>k</mi><mi>c</mi></msub></math> 
-indicates whether pitch class <em>c</em> belongs to the target key. For example, in C major:
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <mi>k</mi>
-      <mo>=</mo>
-      <mo>[</mo>
-      <mn>1</mn>
-      <mo>,</mo>
-      <mn>0</mn>
-      <mo>,</mo>
-      <mn>1</mn>
-      <mo>,</mo>
-      <mn>0</mn>
-      <mo>,</mo>
-      <mn>1</mn>
-      <mo>,</mo>
-      <mn>1</mn>
-      <mo>,</mo>
-      <mn>0</mn>
-      <mo>,</mo>
-      <mn>1</mn>
-      <mo>,</mo>
-      <mn>0</mn>
-      <mo>,</mo>
-      <mn>1</mn>
-      <mo>,</mo>
-      <mn>0</mn>
-      <mo>,</mo>
-      <mn>1</mn>
-      <mo>]</mo>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-We then penalize probability mass assigned to out-of-key pitch classes. For a given track <em>n</em>, the key adherence loss is
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msup>
-        <msub>
-          <mi>&#x1D43B;</mi>
-          <mtext>key</mtext>
-        </msub>
-        <mrow>
-          <mo>(</mo>
-          <mi>n</mi>
-          <mo>)</mo>
-        </mrow>
-      </msup>
-      <mo>=</mo>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mi>&#x03C4;</mi>
-      </munder>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mrow>
-          <mi>c</mi>
-          <mo>=</mo>
-          <mn>0</mn>
-        </mrow>
-      </munder>
-      <msubsup>
-        <mo>&#x2211;</mo>
-        <mrow></mrow>
-        <mrow>
-          <mn>11</mn>
-        </mrow>
-      </msubsup>
-      <msub>
-        <mi>&#x03C0;</mi>
-        <mrow>
-          <mi>&#x03C4;</mi>
-          <mo>,</mo>
-          <mi>n</mi>
-          <mo>,</mo>
-          <mi>c</mi>
-        </mrow>
-      </msub>
-      <mo>&#x00B7;</mo>
-      <mo>(</mo>
-      <mn>1</mn>
-      <mo>-</mo>
-      <msub>
-        <mi>k</mi>
-        <mi>c</mi>
-      </msub>
-      <mo>)</mo>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-This term directly suppresses out-of-key notes, which are especially problematic in small-data settings where models have limited exposure to stable key centers.
-</p>
-
-<h4>Combined Music Theory Loss and Final Objective</h4>
-
-<p>
-The combined Music Theory Loss is averaged across all <em>N</em> tracks:
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msub>
-        <mi>L</mi>
-        <mtext>MT</mtext>
-      </msub>
-      <mo>=</mo>
-      <mfrac>
-        <mn>1</mn>
-        <mi>N</mi>
-      </mfrac>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mrow>
-          <mi>n</mi>
-          <mo>=</mo>
-          <mn>1</mn>
-        </mrow>
-      </munder>
-      <msubsup>
-        <mo>&#x2211;</mo>
-        <mrow></mrow>
-        <mrow>
-          <mi>N</mi>
-        </mrow>
-      </msubsup>
-      <mo>(</mo>
-      <msup>
-        <msub>
-          <mi>&#x1D43B;</mi>
-          <mtext>cons</mtext>
-        </msub>
-        <mrow>
-          <mo>(</mo>
-          <mi>n</mi>
-          <mo>)</mo>
-        </mrow>
-      </msup>
-      <mo>+</mo>
-      <msup>
-        <msub>
-          <mi>&#x1D43B;</mi>
-          <mtext>key</mtext>
-        </msub>
-        <mrow>
-          <mo>(</mo>
-          <mi>n</mi>
-          <mo>)</mo>
-        </mrow>
-      </msup>
-      <mo>)</mo>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-Substituting this expression into the total objective yields our final regularized training loss:
-</p>
-
-<center>
-  <math xmlns="http://www.w3.org/1998/Math/MathML">
-    <mrow>
-      <msub>
-        <mi>&#x1D43B;</mi>
-        <mtext>total</mtext>
-      </msub>
-      <mo>=</mo>
-      <msub>
-        <mi>&#x1D43B;</mi>
-        <mtext>VLB</mtext>
-      </msub>
-      <mo>+</mo>
-      <msub>
-        <mi>&#x03BB;</mi>
-        <mtext>MT</mtext>
-      </msub>
-      <mfrac>
-        <mn>1</mn>
-        <mi>N</mi>
-      </mfrac>
-      <munder>
-        <mo>&#x2211;</mo>
-        <mrow>
-          <mi>n</mi>
-          <mo>=</mo>
-          <mn>1</mn>
-        </mrow>
-      </munder>
-      <msubsup>
-        <mo>&#x2211;</mo>
-        <mrow></mrow>
-        <mrow>
-          <mi>N</mi>
-        </mrow>
-      </msubsup>
-      <mo>(</mo>
-      <msup>
-        <msub>
-          <mi>&#x1D43B;</mi>
-          <mtext>cons</mtext>
-        </msub>
-        <mrow>
-          <mo>(</mo>
-          <mi>n</mi>
-          <mo>)</mo>
-        </mrow>
-      </msup>
-      <mo>+</mo>
-      <msup>
-        <msub>
-          <mi>&#x1D43B;</mi>
-          <mtext>key</mtext>
-        </msub>
-        <mrow>
-          <mo>(</mo>
-          <mi>n</mi>
-          <mo>)</mo>
-        </mrow>
-      </msup>
-      <mo>)</mo>
-    </mrow>
-  </math>
-</center>
-
-<br>
-
-<p>
-All components are computed on the soft distributions 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mi>P</mi></math> 
-(i.e., before sampling), ensuring differentiability and allowing gradients from the harmonic regularizer to update the transformer weights directly.
-</p>
-
-<h3>Experimental Setup</h3>
-
-<p>
-We trained two models on the curated set of 292 Slakh2100 MIDI files: a baseline model using only the GETM objective (the original GETMusic loss) and a regularized model using the full loss 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>total</mtext></msub></math> 
-described above. Both models shared the same Diffusion RoFormer backbone, number of diffusion steps (100), learning rate schedule, and batch size. All experiments were run on Google Colab GPU infrastructure.
-</p>
-
-<p>
-We selected 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03BB;</mi><mtext>MT</mtext></msub></math> 
-to be a small non-zero value (approximately 0.02) so that the Music Theory Loss gently shapes the probability landscape without overwhelming the reconstruction signal.
-</p>
-
-<p>
-For evaluation, we generated continuations for a held-out set of 30 MIDI files and measured explicit compositional errors (e.g., invalid chord triads, severe vertical clashes, and persistent out-of-key note clusters). This metric targets exactly the aspects that MTL is designed to improve—vertical harmony and tonal stability—while holding all other modeling assumptions constant between GETM and our regularized variant.
-</p>
-
-<h3>Inference Constraints</h3>
-
-<p>
-In addition to training-time regularization, we applied strict logic masking during inference. Since the GETMusic vocabulary includes control tokens and pitch values, we prevented the model from emitting invalid pitch tokens (such as MIDI numbers &gt; 127) by zeroing out the logits of all invalid entries before sampling. This guarantees that every generated token corresponds to a valid MIDI event and further stabilizes the output.
-</p>
-
-<p>
-By combining GETMusic’s 2D GETScore representation with our Music Theory Loss, we obtain a symbolic generator capable of learning coherent polyphony from a fraction of the data typically required for such tasks. In the context established by our Introduction and Related Work, these experiments demonstrate that explicitly encoding vertical harmonic constraints into the objective function can bridge the gap between architectures that merely <em>represent</em> 2D structure and models whose training signals actively reward music-theoretic correctness.
-</p>
-
-</section>
-
-<section id="training-loss" class="content-section">
-  <h2>Training Progress</h2>
-  <p>
-    The following plots show the training and validation loss curves for both the baseline GETMusic model and our Music Theory Loss variant over 50 epochs.
-  </p>
-  <div class="getmusic-figures-row">
-    <figure class="getmusic-figure">
-      <img src="./images/train_val_loss_baseline.png" alt="Training and Validation Loss per Epoch - Baseline Model">
-      <figcaption>Baseline GETMusic Model</figcaption>
-    </figure>
-    <figure class="getmusic-figure">
-      <img src="./images/train_val_loss_mtl.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
-      <figcaption>Music Theory Loss Model</figcaption>
-    </figure>
-  </div>
-</section>
-
-<section id="results" class="content-section">
-  <h2>Results &amp; Analysis</h2>
-  <p>
-	Once both models were trained, we ran inference on a test set of 50 MIDIs. In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We collected the audio samples from both and ran quantitative and qualitative evaluation metrics on the 50 outputs from each model. These metrics are discussed in further detail below.
-  </p>
-  <p>
-    In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We ran inference on 50 tracks from Slakh2100's cleaned test set.
-  </p>
-  <p>
-    After generation, we ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
-  </p>
-  <p>
-    To visualize these differences, we computed frequency distributions of all intervals (unisons, thirds, fifths, etc.) for both the baseline and test models, included below.
-  </p>
-</section>
-
-<section id="conclusions" class="content-section">
-  <h2>Conclusions</h2>
-  <p>
-    <!-- TODO: refine final takeaways -->
-    Our preliminary experiments suggest that explicitly encoding simple harmonic priors into the loss can improve symbolic polyphonic generation in low-data settings, while remaining compatible with the existing GETMusic architecture.
-  </p>
-</section>
-
-<section id="references" class="content-section">
-  <h2>References</h2>
-
-  <p>
-    [1] N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
-    <em>Modeling Temporal Dependencies in High-Dimensional Sequences: Application to Polyphonic Music Generation and Transcription.</em>
-    In <em>Proceedings of the 29th International Conference on Machine Learning (ICML)</em>, 2012.
-    arXiv:1206.6392.
-  </p>
-
-  <p>
-    [2] C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
-    <em>Music Transformer: Generating Music with Long-Term Structure.</em>
-    In <em>International Conference on Learning Representations (ICLR)</em>, 2019.
-    arXiv:1809.04281.
-  </p>
-
-  <p>
-    [3] W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
-    <em>Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs.</em>
-    In <em>AAAI Conference on Artificial Intelligence</em>, 2021.
-    arXiv:2101.02402.
-  </p>
-
-  <p>
-    [4] Y. Ren, J. He, X. Tan, et al.
-    <em>PopMAG: Pop Music Accompaniment Generation.</em>
-    In <em>Proceedings of the 28th ACM International Conference on Multimedia</em>, 2020.
-    arXiv:2008.07703.
-  </p>
-
-  <p>
-    [5] J. Ens and P. Pasquier.
-    <em>MMM: Exploring Conditional Multi-Track Music Generation with the Transformer.</em>
-    In <em>Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)</em>, 2020.
-    arXiv:2008.06048.
-  </p>
-
-  <p>
-    [6] H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
-    <em>Multitrack Music Transformer: Learning Long-Term Dependencies in Music with Diverse Instruments.</em>
-    In <em>ICASSP</em>, 2023.
-    arXiv:2207.06983.
-  </p>
-
-  <p>
-    [7] K. Ryu, S. Cho, H. Choi, et al.
-    <em>Nested Music Transformer: Sequentially Decoding Compound Tokens in Symbolic Music.</em>
-    In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2024.
-    arXiv:2408.01180.
-  </p>
-
-  <p>
-    [8] H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
-    <em>MuseGAN: Multi-Track Sequential Generative Adversarial Networks for Symbolic Music Generation and Accompaniment.</em>
-    In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2018.
-    arXiv:1709.06298.
-  </p>
-
-  <p>
-    [9] L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
-    <em>MidiNet: A Convolutional Generative Adversarial Network for Symbolic-Domain Music Generation.</em>
-    In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2017.
-    arXiv:1703.10847.
-  </p>
-
-  <p>
-    [10] K. W. Cheuk, R. Sawata, T. Uesaka, et al.
-    <em>DiffRoll: Diffusion-based Generative Music Transcription with Unsupervised Pretraining Capability.</em>
-    In <em>ICASSP</em>, 2023.
-    arXiv:2210.05148.
-  </p>
-
-  <p>
-    [11] Z. Lv, Z. Dai, G. Li, et al.
-    <em>GETMusic: Generating Any Music Tracks with a Unified Representation and Diffusion Framework.</em>
-    arXiv:2305.10841, 2023.
-  </p>
-
-</section>
-		    <div class="margin-right-block">
-            <!-- margin notes for reference block here -->
-		    </div>
-		</div>
-
-<script>
-  document.querySelectorAll('.content-card').forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      card.style.setProperty('--glow-x', x + 'px');
-      card.style.setProperty('--glow-y', y + 'px');
-    });
-
-    card.addEventListener('mouseleave', function() {
-      // Optional: fade glow back to center when leaving
-      card.style.removeProperty('--glow-x');
-      card.style.removeProperty('--glow-y');
-    });
-  });
-</script>
-	</body>
-
+    <div class="page">
+      <aside class="toc" aria-label="Table of contents">
+        <p class="toc-title">On this page</p>
+        <nav>
+          <ol>
+            <li><a href="#introduction-title">Introduction</a></li>
+            <li><a href="#background-title">Background &amp; Related Work</a></li>
+            <li><a href="#methodology-title">Methodology &amp; Experiments</a></li>
+            <li><a href="#results-title">Results &amp; Analysis</a></li>
+            <li><a href="#conclusion-title">Conclusions</a></li>
+            <li><a href="#references-title">References</a></li>
+          </ol>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header>
+          <p class="kicker">6.7960 Deep Learning Final Project</p>
+          <h1>
+            Music-Theory Informed Loss for Polyphonic MIDI<br />
+            Generation with Transformer Diffusion Models
+            <a
+              class="repo-link"
+              href="https://github.com/mihikadusad/music-theory-loss"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="View project on GitHub"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.54 5.47 7.59.4.07.55-.17.55-.38
+                  0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                  -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+                  0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27
+                  1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                  0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"
+                />
+              </svg>
+            </a>
+          </h1>
+          <p class="meta">
+            <span style="font-weight:500;">Authors:</span>
+            <a href="https://github.com/mihikadusad"><strong>Mihika Dusad</strong></a>
+            ·
+            <a href="https://github.com/victoriaxhu"><strong>Victoria Hu</strong></a>
+          </p>
+        </header>
+
+        <section aria-labelledby="introduction-title">
+          <h2 id="introduction-title" class="toc-linked">Introduction</h2>
+          <p>
+            AI-guided audio generation efforts have become increasingly popular, both in research and in industry [1, 2]. However, there is a key distinction between training models to generate pure audio and compose music. The process of composing true playable pieces, consisting of notes, rhythms, instruments, chords, is referred to as symbolic music generation. For symbolic music generation, models are generally trained to work with and generate MIDI (Musical Instrument Digital Interface) files, a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements.
+          </p>
+          <p>
+            Most current systems represent MIDIs as a single sequence of note events, forcing the model to implicitly discover 2D structure — melodic continuity, chord consistency, and voice independence — from flattened data. Despite improvements in tokenization schemes, these models often struggle to maintain stable voice lines or valid harmonic textures. In reality, polyphonic music is inherently two-dimensional: the horizontal axis reflects how melodies evolve over time, while the vertical axis captures the harmony formed by notes sounding together at each moment. Flattening this grid into a 1D sequence obscures both dimensions, making it significantly harder for models to learn coherent melodic motion and consistent chordal structure. One framework developed by Microsoft research, GETMusic [3], addresses this issue by converting MIDI inputs into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
+          </p>
+          <figure>
+            <img src="./images/midi_demo.png" alt="MIDI demonstration showing 2D representation" />
+            <figcaption><strong>Figure 1:</strong> MIDI demonstration showing piano roll representation. Note the distinction between audio waves and symbolic music. </figcaption>
+          </figure>
+          <p>
+            We seek to build upon the GETMusic architecture by incorporating an explicit, music-theory-informed loss regularization term into the GETMusic framework to more reliably enforce vertical harmonic constraints. By aligning the objective function with known principles of polyphonic writing, we strengthen the inductive biases already present in GETMusic’s 2D representation and reduce the dependence on massive curated datasets. We aim to produce more coherent polyphonic outcomes, especially when training resources or datasets are limited.
+          </p>
+        </section>
+
+        <section aria-labelledby="background-title">
+          <h2 id="background-title" class="toc-linked">Background &amp; Related Work</h2>
+
+          <h3>Sequence-based symbolic models</h3>
+          <p>
+            Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures [4]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. When the transformer architecture was applied to music [5] for the first time in 2018, it introduced relative positional self-attention for long-range structure, but encoded all notes—across hands or tracks—as a single 1D event stream. Vertical relationships, i.e. which notes sound together at once, were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
+          </p>
+          <p>
+            Some other examples of modern symbolic music generators that interpret musical input as a single stream include:
+          </p>
+          <ul>
+            <li>
+              <strong>Compound Word Transformer (CP-Transformer)</strong> [6]: Groups attributes of a single note (pitch, duration, velocity, instrument) into compound tokens, shortening sequences and slightly tightening intra-note structure, but the representation remains a flat stream of notes.
+            </li>
+            <li>
+              <strong>PopMAG / MuMIDI</strong> [7]: Proposes a multi-track sequence representation where track identity and chord information are encoded as token attributes. This allows multi-track accompaniment generation but further lengthens the sequence and still interleaves tracks in one stream.
+            </li>
+            <li>
+              <strong>MMM (Multi-Track Music Machine), MTMT (Multitrack Music Transformer), and Nested Music Transformer</strong> [8–10]: Encode multi-track events as tuples (instrument, pitch, duration, etc.) that are then fully flattened into a 1D sequence.
+            </li>
+          </ul>
+          <p>
+            In these sequence-based models, harmony and voice-leading emerge from learned attention patterns over a long interleaved sequence. In practice, this creates well-known failure modes—voice crossing, unstable chord spacing, local dissonances, and loss of individual line identity—unless trained on a very large dataset and carefully regularized. Our work is motivated by this limitation: we aim to preserve the advantages of transformer-style modeling while moving towards representations and objectives that encode vertical structure more explicitly.
+          </p>
+
+          <h3>Image-based / 2D representations</h3>
+          <p>
+            A second family of methods abandons purely sequential representations and instead treats symbolic music as a 2D grid, usually a piano-roll with time on the horizontal axis and pitch on the vertical axis, sometimes with instrument tracks as channels.
+          </p>
+          <ul>
+            <li>
+              <strong>MuseGAN</strong> [11]: Generates multi-track piano-roll tensors, where each bar is represented as a binary matrix of size (time steps × pitches × tracks). Convolutional GANs operate directly on this 2D (plus channels) structure, so vertical chords and cross-track combinations are local patterns in an “image” rather than dispersed tokens, yielding strong local harmonic textures but typically limited to bar-level phrases with GAN training instabilities and weak global structure.
+            </li>
+            <li> <strong> MidiNet</strong> [12]: Uses convolutional GANs to generate melody one bar at a time in piano-roll form, conditioned on both 1D sequences (chords) and 2D contexts (previous bars). While the vertical axis explicitly encodes chord content, the objective is still a generic adversarial loss over images rather than a music-theoretic notion of harmony.
+            </li>
+            <li>
+              <strong>DiffRoll</strong> [13]: Employs diffusion to generate piano-rolls conditioned on audio spectrograms for automatic music transcription. The model denoises a 2D time-pitch grid of symbolic events from Gaussian noise, demonstrating that diffusion in a piano-roll space can capture realistic local harmonic patterns.
+            </li>
+          </ul>
+
+          <h3>GETMusic and 2D token grids</h3>
+          <p>
+            Architecturally, our work is closest to GETMusic [3], which positions itself between transformer sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
+          </p>
+          <p>
+            A discrete diffusion model, GETDiff, denoises masked target tracks conditioned on source tracks in a non-autoregressive fashion, enabling flexible any-track-to-any-track generation and zero-shot infilling. Compared to piano-roll GANs/diffusion, GETScore avoids extremely large and sparse images while still making both horizontal continuity and vertical cross-track relationships spatially explicit. Compared to 1D event models such as PopMAG, it eliminates track interleaving: tracks are temporally aligned in a score-like grid rather than interwoven in a single stream.
+          </p>
+          <p>
+            However, GETMusic’s objective remains a purely statistical discrete diffusion loss plus auxiliary reconstruction terms. There is no explicit bias towards music-theoretic principles beyond what is implicitly encoded in the dataset and the compound-token construction. In fact, the authors emphasize that they crawled and cleaned over 1.5M MuseScore MIDIs (around 2,800 hours of data) to train GETMusic, underscoring its dependence on very large curated datasets to learn harmonic structure robustly.
+          </p>
+
+          <h3>Positioning our contribution</h3>
+          <p>
+            Our project builds directly on this GETMusic line of work: we retain a 2D symbolic representation and a diffusion-style transformer backbone, but modify the learning objective by adding a music-theory-informed regularization term that explicitly evaluates the vertical slice (local harmony and spacing at each time step). Rather than treating harmony as a purely emergent property of data and generic denoising, we encode constraints derived from polyphonic writing practice—for example, penalties for certain dissonant intervals or unstable chord spacings, and rewards for consonant interval structures and consistent voice ranges—and integrate them into the loss function calculation.
+          </p>
+        </section>
+
+        <section aria-labelledby="methodology-title">
+          <h2 id="methodology-title" class="toc-linked">Methodology &amp; Experiments</h2>
+
+          <p>
+            To validate our hypothesis that explicit music-theoretic constraints can improve polyphonic generation—particularly in data-constrained environments—we implemented our proposed regularization framework on top of the GETMusic architecture. Our goal is to determine whether injecting domain-specific inductive biases into a diffusion-based symbolic music generator enables coherent harmonic structure even when trained on only a few hundred examples. We therefore conducted controlled experiments comparing the original GETMusic loss (GETM) against our proposed Music Theory Loss (MTL), using identical training conditions and evaluation metrics.
+          </p>
+
+          <h3>Dataset and Preprocessing</h3>
+          <p>
+            We downloaded the open source Slakh2100 dataset, which largely focuses on pop music. It contains 1500 training tracks, 375 validation tracks, and 225 test tracks. Our preprocessing pipeline consisted of three major stages:
+          </p>
+
+          <p>
+            <strong>1. Track Merging.</strong>
+            We mapped Slakh's multi-instrument arrangements into the standardized 14-row GETScore layout (7 instruments × 2 attributes: pitch and duration). GETMusic supports the following instruments, labeled by their instrument code: '0': piano, '25':guitar, '32':bass, '48':string, '80':lead melody; along with drums and chord labels.
+          </p>
+
+          <p>
+            <strong>2. Filtering.</strong>
+            Each MIDI file is converted into GETMusic's event-based OCT representation, where note events are assigned to a fixed grid of discrete time steps determined by the model's bar and positional resolution. This mapping ensures that notes, durations, and positions align with the model's multi-track format. After conversion, events that fall outside supported instrument types, have zero durations, or violate representation constraints are filtered out. The final encoded sequence is then chunked or padded to fit the model's maximum sequence length of 512 tokens for training.
+          </p>
+
+          <p>
+            <strong>3. Data Pruning.</strong>
+            Tracks that lacked sufficient polyphonic content or fell below a minimum length threshold were removed. The resulting curated dataset consisted of <strong>292 MIDI files</strong>—dramatically smaller than the 1.5M files used by the original GETMusic authors. This constrained setting is intentional: our goal is to test whether explicit harmonic regularization can compensate for limited data, a regime where standard diffusion-based systems often fail.
+          </p>
+
+          <h3>Architecture and the Music Theory Loss</h3>
+          <p>
+            Our backbone model is the Diffusion RoFormer (Rotary Transformer) used in the GETMusic framework. Let the logits over the discrete vocabulary at each diffusion step be denoted by
+          </p>
+          <div class="equation">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <mrow>
+                <mi>&ell;</mi>
+                <mo>&#x2208;</mo>
+                <msup>
+                  <mi>&#x211D;</mi>
+                  <mrow>
+                    <mi>B</mi>
+                    <mo>&#x00D7;</mo>
+                    <mi>V</mi>
+                    <mo>&#x00D7;</mo>
+                    <mi>L</mi>
+                  </mrow>
+                </msup>
+              </mrow>
+            </math>
+          </div>
+
+          <p>
+            where <em>B</em> is the batch size, <em>V</em> is the vocabulary size, and <em>L</em> is the sequence length in the GETScore grid. The corresponding conditional distribution over clean tokens at diffusion step <em>t</em> is
+          </p>
+          <div class="equation">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <mrow>
+                <mi>P</mi>
+                <mo>(</mo>
+                <msub>
+                  <mi>x</mi>
+                  <mn>0</mn>
+                </msub>
+                <mo>|</mo>
+                <msub>
+                  <mi>x</mi>
+                  <mi>t</mi>
+                </msub>
+                <mo>)</mo>
+                <mo>=</mo>
+                <mi>softmax</mi>
+                <mo>(</mo>
+                <mi>&ell;</mi>
+                <mo>)</mo>
+                <mo>&#x2208;</mo>
+                <msup>
+                  <mi>&#x211D;</mi>
+                  <mrow>
+                    <mi>B</mi>
+                    <mo>&#x00D7;</mo>
+                    <mi>V</mi>
+                    <mo>&#x00D7;</mo>
+                    <mi>L</mi>
+                  </mrow>
+                </msup>
+              </mrow>
+            </math>
+          </div>
+
+          <p>
+            The baseline GETMusic objective is the Variational Lower Bound (VLB) on the log-likelihood, which trains the model to reconstruct the clean token grid
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mn>0</mn></msub></math>
+            from the corrupted state
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>x</mi><mi>t</mi></msub></math>.
+            To encode music-theoretic structure into this process, we augment the VLB with our Music Theory Loss (MTL), obtaining the total training objective
+          </p>
+          <div class="equation">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <mrow>
+                <msub>
+                  <mi>L</mi>
+                  <mtext>total</mtext>
+                </msub>
+                <mo>=</mo>
+                <msub>
+                  <mi>L</mi>
+                  <mtext>VLB</mtext>
+                </msub>
+                <mo>+</mo>
+                <msub>
+                  <mi>&#x03BB;</mi>
+                  <mtext>MT</mtext>
+                </msub>
+                <msub>
+                  <mi>L</mi>
+                  <mtext>MT</mtext>
+                </msub>
+              </mrow>
+            </math>
+          </div>
+
+          <p>
+            Here,
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03BB;</mi><mtext>MT</mtext></msub></math>
+            controls the strength of the music-theoretic regularization. Conceptually, GETM refers to the baseline objective
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>VLB</mtext></msub></math>,
+            while MTL denotes our additional structured loss term
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>L</mi><mtext>MT</mtext></msub></math>.
+          </p>
+
+          <p>
+            MTL is composed of two components: a Vertical Consonance Loss enforcing harmonic stability across tracks, and a Key Adherence Loss promoting tonal coherence.
+          </p>
+
+          <h4>Pitch-Class Distributions</h4>
+          <p>
+            We operate on pitch-class distributions aggregated from the vocabulary-level probabilities. Let
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>&#x03C4;</mi></math>
+            index time positions along the horizontal axis and <em>n</em> index tracks along the vertical axis. For each token position
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>(</mo><mi>&#x03C4;</mi><mo>,</mo><mi>n</mi><mo>)</mo></mrow></math>,
+            we project from vocabulary space to the 12 pitch classes by summing over all vocabulary entries assigned to each pitch class via a fixed mapping matrix
+            <math xmlns="http://www.w3.org/1998/Math/MathML"><mi>M</mi></math>.
+          </p>
+
+          <p>
+            This gives us a 12-dimensional distribution over pitch classes for each track and time step, which we use in both components of the Music Theory Loss.
+          </p>
+        </section>
+
+        <section aria-labelledby="training-title">
+          <h2 id="training-title">Training Progress</h2>
+          <p>
+            We trained both our modified architecture and the baseline MIDI generation model on a preprocessed collection of 292 MIDI files from slakh-2100, resulting in 1650 trainable segments of audio. We ran 50 epochs with 546 iterations per epoch. We also made use of a validation set during training. The following plots show the training and validation loss curves for both the baseline GETMusic model and our Music Theory Loss variant over the course of training.
+          </p>
+          <div class="figures-row">
+            <figure>
+              <img src="./images/baseline_loss_graph.png" alt="Training and Validation Loss per Epoch - Baseline Model">
+              <figcaption><strong>Figure 2:</strong> Baseline GETMusic Model</figcaption>
+            </figure>
+            <figure>
+              <img src="./images/modified_loss_graph.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
+              <figcaption><strong>Figure 3:</strong> MTL Model</figcaption>
+            </figure>
+          </div>
+          <p>
+            As can be seen in Figures 2 and 3, the baseline GETMusic model converges much faster than the MTL model, which is likely due to an overfit on limited training data. 
+          </p>
+        </section>
+
+        <section aria-labelledby="results-title">
+          <h2 id="results-title" class="toc-linked">Results &amp; Analysis</h2>
+          <p>
+            In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We ran inference on 50 tracks from Slakh2100's cleaned test set.
+          </p>
+          <p>
+            After generation, we ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
+          </p>
+          <p>
+            To visualize these differences, we computed frequency distributions of all intervals (unisons, thirds, fifths, etc.) for both the baseline and test models, included below.
+          </p>
+          <h3>Qualitative</h3>
+          <p>
+            We provide sample MIDIs that were generated by the original model and our modified model.
+          </p>
+          <p>
+            <strong>Original loss:</strong><br />
+            <audio controls>
+              <source src="./images/baseline_sample_trim.wav" type="audio/wav">
+              Your browser does not support the audio element.
+            </audio>
+          </p>
+          <p>
+            <strong>Music theory-based loss:</strong><br />
+            <audio controls>
+              <source src="./images/new_sample_trim.wav" type="audio/wav">
+              Your browser does not support the audio element.
+            </audio>
+          </p>
+          <p>
+            In this example, we can see that the model using a music theory-based loss function does a slightly better job of generating a leading melody which maintains coherent vertical harmony. The music theory-based loss emphasizes the inclusion of more triads like the first G major chord you hear so clearly in the beginning. Some other stylistic differences can be discerned between the two recordings, such as the increased dissonance in the first recording and clashing of multiple tracks and instruments. Our loss function seems able to guide the model to prioritize inter-track harmony through the vertical consonance and key adherence loss components. However, given the sparsity of data and difficulty in objectively evaluating something as subjective asmusic, we turn to quantitative metrics.
+          </p>
+
+          <h3>Quantitative</h3>
+          <p>
+            We also wanted to quantitatively assess the differences in the model outputs. We ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
+          </p>
+          <p>
+            As can be seen in Figures 4 and 5, the music theory-based loss function creates a higher frequency of perfect intervals (unison, perfect fourth, perfect fifth) as well as major and minor thirds. On the other hand, the baseline generated a more diverse spread of intervals. This makes sense given our loss function; the key adherence loss in particular emphasizes maintaining regular intervals between adjacent notes.
+          </p>
+          <div class="figures-row">
+            <figure>
+              <img src="./images/interval_freq_baseline.png" alt="Interval frequency distribution - baseline model" />
+              <figcaption><strong>Figure 4:</strong> Baseline model interval frequency distribution.</figcaption>
+            </figure>
+            <figure>
+              <img src="./images/interval_freq_new.png" alt="Interval frequency distribution - music theory-based loss model" />
+              <figcaption><strong>Figure 5:</strong> MTL model interval frequency distribution.</figcaption>
+            </figure>
+          </div>
+          <p>
+            We also looked at the distribution of key adherence per piece. We inferred the global key of a MIDI piece by selecting the major or minor key whose rotated Krumhansl–Schmuckler profile - a fixed distribution for the number of occurrences of each note in a specific key - best matched the piece's pitch-class histogram. Key adherence was then computed as the proportion of all notes whose pitch classes fall within the diatonic scale of that inferred key. As shown in Figures 6 and 7, we found that the key adherence was stronger in the baseline model rather than the MTL model. This was not an intended outcome, which we explain in more detail in the conclusion.
+          </p>
+          <div class="figures-row">
+            <figure>
+              <img src="./images/key_adherence_baseline_ss.png" alt="Key adherence distribution - baseline model" />
+              <figcaption><strong>Figure 6:</strong> Baseline model key adherence distribution.</figcaption>
+            </figure>
+            <figure>
+              <img src="./images/key_adherence_new_ss.png" alt="Key adherence distribution - music theory-based loss model" />
+              <figcaption><strong>Figure 7:</strong> MTL model key adherence distribution.</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section aria-labelledby="conclusion-title">
+          <h2 id="conclusion-title" class="toc-linked">Conclusions</h2>
+          <p>
+            Our preliminary experiments suggest that explicitly encoding simple harmonic priors into the loss can improve symbolic polyphonic generation in low-data settings, while remaining compatible with the existing GETMusic architecture.
+          </p>
+          <p>
+            A key limitation of our current setup is the capacity/data mismatch: the architecture is quite powerful relative to the amount of high-quality symbolic data we were able to curate. In practice, scaling the dataset is non-trivial; finding open source data, cleaning MIDI files, and normalizing instrumentation proved to be some of the most technically challenging aspects of our process. Despite adding stronger inductive biases to partially compensate for limited data, these constraints still cap how reliably the model can internalize harmonic structure.
+          </p>
+          <p>
+            Going forward, we see several directions. First, we plan to broaden the family of music-theory loss terms beyond the current key-adherence–style regularizer, including transposition-invariance losses that encourage similar predictions under global key shifts, discouraging extreme leaps, chord and progression losses based on functional harmony or circle-of-fifths proximity, as well as metrical and phrasing losses, such as downbeat chord stability, and preference for chord changes on strong beats. Second, our evaluation was constrained by the stylistic and structural limitations of the datasets we used. Because our training data focused on a narrow range of genres and track configurations, we were unable to exploit the rich diversity found in classical corpora such as Bach chorales, SATB a cappella scores, or multi-instrument orchestral datasets. Likewise, our testing primarily centered on a fixed subset of tracks, leaving rhythmic components—especially drums—underexplored. Broadening the stylistic scope and incorporating datasets with more varied harmonic and rhythmic profiles would likely improve the model's ability to generalize across musical textures.
+          </p>
+          <p>
+            By systematically tuning these weights and progressively enriching the theory-aware loss portfolio—while also investing in larger, cleaner symbolic corpora—we expect future iterations to make more consistent use of musical structure, even under data-constrained settings.
+          </p>
+        </section>
+
+        <section aria-labelledby="references-title" class="references">
+          <h2 id="references-title" class="toc-linked">References</h2>
+          <ol>
+            <li>
+              H. Wang, Y.-N. Chen, Z. Huang, et al.
+              <em>MusicGen: Generating High-Fidelity Music from Text.</em>
+              arXiv:2406.00146, 2024.
+              Available at: <a href="https://arxiv.org/abs/2406.00146">https://arxiv.org/abs/2406.00146</a>.
+            </li>
+            <li>
+              Suno AI.
+              <em>Suno: Text-to-Music Generation Platform.</em>
+              Available at: <a href="https://suno.com/home">https://suno.com/home</a>.
+            </li>
+            <li>
+              Z. Lv, Z. Dai, G. Li, et al.
+              <em>GETMusic: Generating Any Music Tracks with a Unified Representation and Diffusion Framework.</em>
+              arXiv:2305.10841, 2023.
+            </li>
+            <li>
+              N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
+              <em>
+                Modeling Temporal Dependencies in High-Dimensional Sequences:
+                Application to Polyphonic Music Generation and Transcription.
+              </em>
+              In <em>Proceedings of the 29th International Conference on Machine Learning (ICML)</em>, 2012.
+              arXiv:1206.6392.
+            </li>
+            <li>
+              C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
+              <em>Music Transformer: Generating Music with Long-Term Structure.</em>
+              In <em>International Conference on Learning Representations (ICLR)</em>, 2019.
+              arXiv:1809.04281.
+            </li>
+            <li>
+              W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
+              <em>Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs.</em>
+              In <em>AAAI Conference on Artificial Intelligence</em>, 2021.
+              arXiv:2101.02402.
+            </li>
+            <li>
+              Y. Ren, J. He, X. Tan, et al.
+              <em>PopMAG: Pop Music Accompaniment Generation.</em>
+              In <em>Proceedings of the 28th ACM International Conference on Multimedia</em>, 2020.
+              arXiv:2008.07703.
+            </li>
+            <li>
+              J. Ens and P. Pasquier.
+              <em>MMM: Exploring Conditional Multi-Track Music Generation with the Transformer.</em>
+              In <em>Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)</em>, 2020.
+              arXiv:2008.06048.
+            </li>
+            <li>
+              H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
+              <em>Multitrack Music Transformer: Learning Long-Term Dependencies in Music with Diverse Instruments.</em>
+              In <em>ICASSP</em>, 2023.
+              arXiv:2207.06983.
+            </li>
+            <li>
+              K. Ryu, S. Cho, H. Choi, et al.
+              <em>Nested Music Transformer: Sequentially Decoding Compound Tokens in Symbolic Music.</em>
+              In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2024.
+              arXiv:2408.01180.
+            </li>
+            <li>
+              H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
+              <em>MuseGAN: Multi-Track Sequential Generative Adversarial Networks for Symbolic Music Generation and Accompaniment.</em>
+              In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2018.
+              arXiv:1709.06298.
+            </li>
+            <li>
+              L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
+              <em>MidiNet: A Convolutional Generative Adversarial Network for Symbolic-Domain Music Generation.</em>
+              In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2017.
+              arXiv:1703.10847.
+            </li>
+            <li>
+              K. W. Cheuk, R. Sawata, T. Uesaka, et al.
+              <em>DiffRoll: Diffusion-based Generative Music Transcription with Unsupervised Pretraining Capability.</em>
+              In <em>ICASSP</em>, 2023.
+              arXiv:2210.05148.
+            </li>
+          </ol>
+        </section>
+      </main>
+
+    </div>
+  </body>
 </html>
