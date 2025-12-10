@@ -593,7 +593,7 @@ We seek to build upon the GETMusic architecture by incorporating an explicit, mu
 
   <h3>Image-based / 2D representations</h3>
   <p>
-    A second family of methods abandons purely sequential representations and instead treats symbolic music as a 2D grid, usually a piano-roll with time on the horizontal axis and pitch on the vertical axis, sometimes with instrument tracks as channels. This makes vertical harmony explicit in the representation but introduces its own challenges.
+    A second family of methods abandons purely sequential representations and instead treats symbolic music as a 2D grid, usually a piano-roll with time on the horizontal axis and pitch on the vertical axis, sometimes with instrument tracks as channels. 
   </p>
   <ul>
     <li>
@@ -606,13 +606,11 @@ We seek to build upon the GETMusic architecture by incorporating an explicit, mu
       <strong>DiffRoll (Cheuk et al., 2022)</strong>[10]: Employs diffusion to generate piano-rolls conditioned on audio spectrograms for automatic music transcription. The model denoises a 2D time-pitch grid of symbolic events from Gaussian noise, demonstrating that diffusion in a piano-roll space can capture realistic local harmonic patterns.
     </li>
   </ul>
-  <p>
-    These 2D approaches leverage the vertical axis to make simultaneous note representations and harmony more accessible to the model, but they typically operate on high-resolution, sparse piano-roll images that are expensive to model. They also rely on distribution-matching objectives (GAN, cross-entropy/MSE, or other generic diffusion losses) that treat harmonic correctness as whatever appears frequently in the training data, without explicit constraints about voice-leading, chord function, or dissonance resolution.
-  </p>
+
 
   <h3>GETMusic and 2D token grids</h3>
   <p>
-    Architecturally, our work is closest to GETMusic (Lv et al., 2023)[11], which explicitly positions itself between sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
+    Architecturally, our work is closest to GETMusic (Lv et al., 2023)[11], which positions itself between transformer sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
   </p>
   <p>
     A discrete diffusion model, GETDiff, denoises masked target tracks conditioned on source tracks in a non-autoregressive fashion, enabling flexible any-track-to-any-track generation and zero-shot infilling. Compared to piano-roll GANs/diffusion, GETScore avoids extremely large and sparse images while still making both horizontal continuity and vertical cross-track relationships spatially explicit. Compared to 1D event models such as PopMAG, it eliminates track interleaving: tracks are temporally aligned in a score-like grid rather than interwoven in a single stream.
@@ -624,25 +622,6 @@ We seek to build upon the GETMusic architecture by incorporating an explicit, mu
   <h3>Positioning our contribution</h3>
   <p>
     Our project builds directly on this GETMusic line of work: we retain a 2D symbolic representation and a diffusion-style transformer backbone, but modify the learning objective by adding a music-theory-informed regularization term that explicitly evaluates the vertical slice (local harmony and spacing at each time step). Rather than treating harmony as a purely emergent property of data and generic denoising, we encode constraints derived from polyphonic writing practice—for example, penalties for certain dissonant intervals or unstable chord spacings, and rewards for consonant interval structures and consistent voice ranges—and integrate them into the loss function calculation.
-  </p>
-</section>
-
-<!-- = Non-transformer models with explicit 2D inductive biases = -->
-<section id="non-transformer-2d" class="content-section">
-  <h2>Non-transformer models with explicit 2D inductive biases</h2>
-  <p>
-    Prior to the Transformer era, several models demonstrated that explicitly modeling the 2D music grid (voices × time) produces more coherent voice-leading and harmony:
-  </p>
-  <ul>
-    <li>
-      <strong>DeepBach (Hadjeres et al., 2017)</strong>: Models chorales as a matrix of pitches over discrete time steps; the sampling process treats vertical slices of the score as first-class objects.
-    </li>
-    <li>
-      <strong>Coconet / Counterpoint by Convolution (Huang et al., 2019)</strong>: Uses a large convolutional network over a 2D piano-roll representation (pitch × time) to enable inpainting and harmony generation.
-    </li>
-  </ul>
-  <p>
-    These systems succeed largely because they directly encode vertical relationships, making correct chord structures and spacing easier for the network to learn. However, they are largely restricted to four-part choral textures and do not readily generalize to multi-track MIDI with arbitrary instrumentation, expressive timing, or long pieces. Moreover, they lack the generative flexibility and scalability of modern diffusion or transformer models.
   </p>
 </section>
 
@@ -688,21 +667,17 @@ To validate our hypothesis that explicit music-theoretic constraints can improve
 <h3>Dataset and Preprocessing</h3>
 
 <p>
-We utilized the Slakh2100 dataset, a standard benchmark for audio source separation and symbolic music generation. Since our task focuses exclusively on symbolic generation, we extracted only the MIDI component, which provides separated instrumental tracks including bass, drums, guitar, and piano. These tracks were converted into the 2D GETScore representation required by GETMusic.
-</p>
-
-<p>
-Our preprocessing pipeline consisted of three major stages:
+We downloaded the open source Slakh2100 dataset, which largely focuses on pop music. It contains 1500 training tracks, 375 validation tracks, and 225 test tracks. Our preprocessing pipeline consisted of three major stages:
 </p>
 
 <p>
 <strong>1. Track Merging.</strong>
-We mapped Slakh’s multi-instrument arrangements into the standardized 14-row GETScore layout (7 instruments × 2 attributes: pitch and duration). This preserves both horizontal temporal structure and vertical harmonic alignment across tracks.
+We mapped Slakh's multi-instrument arrangements into the standardized 14-row GETScore layout (7 instruments × 2 attributes: pitch and duration). GETMusic supports the following instruments, labeled by their instrument code: '0': piano, '25':guitar, '32':bass, '48':string, '80':lead melody; along with drums and chord labels.
 </p>
 
 <p>
-<strong>2. Quantization and Filtering.</strong>
-We quantized all MIDI events to a fixed temporal resolution compatible with the model’s maximum sequence length of 512 tokens. This ensured uniformity across the dataset and reduced sparsity in the grid-like representation.
+<strong>2. Filtering.</strong>
+Each MIDI file is converted into GETMusic's event-based OCT representation, where note events are assigned to a fixed grid of discrete time steps determined by the model's bar and positional resolution. This mapping ensures that notes, durations, and positions align with the model's multi-track format. After conversion, events that fall outside supported instrument types, have zero durations, or violate representation constraints are filtered out. The final encoded sequence is then chunked or padded to fit the model's maximum sequence length of 512 tokens for training.
 </p>
 
 <p>
@@ -1334,7 +1309,7 @@ described above. Both models shared the same Diffusion RoFormer backbone, number
 <p>
 We selected 
 <math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>&#x03BB;</mi><mtext>MT</mtext></msub></math> 
-to be a small non-zero value (approximately 0.02) so that the Music Theory Loss gently shapes the probability landscape without overwhelming the reconstruction signal. This preserves rhythmic and structural patterns learned by the diffusion process while explicitly guiding the model toward consonant and in-key outcomes.
+to be a small non-zero value (approximately 0.02) so that the Music Theory Loss gently shapes the probability landscape without overwhelming the reconstruction signal.
 </p>
 
 <p>
@@ -1356,8 +1331,13 @@ By combining GETMusic’s 2D GETScore representation with our Music Theory Loss,
 <section id="results" class="content-section">
   <h2>Results &amp; Analysis</h2>
   <p>
-    <!-- TODO: add full quantitative and qualitative results here -->
-    We qualitatively compare generations from the baseline GETMusic objective and our Music Theory Loss variant, and analyze error rates for vertical consonance and key adherence on held-out Slakh2100 continuations.
+    In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We ran inference on 50 tracks from Slakh2100's cleaned test set.
+  </p>
+  <p>
+    After generation, we ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
+  </p>
+  <p>
+    To visualize these differences, we computed frequency distributions of all intervals (unisons, thirds, fifths, etc.) for both the baseline and test models, included below.
   </p>
 </section>
 
