@@ -563,15 +563,15 @@
           <div class="figures-row">
             <figure>
               <img src="./images/baseline_loss_graph.png" alt="Training and Validation Loss per Epoch - Baseline Model">
-              <figcaption>Baseline GETMusic Model</figcaption>
+              <figcaption><strong>Figure 1:</strong> Baseline GETMusic Model</figcaption>
             </figure>
             <figure>
               <img src="./images/modified_loss_graph.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
-              <figcaption>MTL Model</figcaption>
+              <figcaption><strong>Figure 2:</strong> MTL Model</figcaption>
             </figure>
           </div>
           <p>
-            As can be seen in Figure X, the baseline GETMusic model converges much faster than the MTL model, which is likely due to an overfit on limited training data. 
+            As can be seen in Figures 1 and 2, the baseline GETMusic model converges much faster than the MTL model, which is likely due to an overfit on limited training data. 
           </p>
         </section>
 
@@ -613,29 +613,29 @@
             We also wanted to quantitatively assess the differences in the model outputs. We ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
           </p>
           <p>
-            As can be seen in Figure X, the music theory-based loss function creates a higher frequency of perfect intervals (unison, perfect fourth, perfect fifth) as well as major and minor thirds. On the other hand, the baseline generated a more diverse spread of intervals. This makes sense given our loss function; the key adherence loss in particular emphasizes maintaining regular intervals between adjacent notes.
+            As can be seen in Figures 3 and 4, the music theory-based loss function creates a higher frequency of perfect intervals (unison, perfect fourth, perfect fifth) as well as major and minor thirds. On the other hand, the baseline generated a more diverse spread of intervals. This makes sense given our loss function; the key adherence loss in particular emphasizes maintaining regular intervals between adjacent notes.
           </p>
           <div class="figures-row">
             <figure>
               <img src="./images/interval_freq_baseline.png" alt="Interval frequency distribution - baseline model" />
-              <figcaption>Baseline model interval frequency distribution.</figcaption>
+              <figcaption><strong>Figure 3:</strong> Baseline model interval frequency distribution.</figcaption>
             </figure>
             <figure>
               <img src="./images/interval_freq_new.png" alt="Interval frequency distribution - music theory-based loss model" />
-              <figcaption>MTL model interval frequency distribution.</figcaption>
+              <figcaption><strong>Figure 4:</strong> MTL model interval frequency distribution.</figcaption>
             </figure>
           </div>
           <p>
-            We also looked at the distribution of key adherence per piece. We inferred the global key of a MIDI piece by selecting the major or minor key whose rotated Krumhansl–Schmuckler profile - a fixed distribution for the number of occurrences of each note in a specific key - best matched the piece’s pitch-class histogram. Key adherence was then computed as the proportion of all notes whose pitch classes fall within the diatonic scale of that inferred key. As shown in Figure X, we found that the key adherence was stronger in the baseline model rather than the MTL model. This was not an intended outcome.
+            We also looked at the distribution of key adherence per piece. We inferred the global key of a MIDI piece by selecting the major or minor key whose rotated Krumhansl–Schmuckler profile - a fixed distribution for the number of occurrences of each note in a specific key - best matched the piece's pitch-class histogram. Key adherence was then computed as the proportion of all notes whose pitch classes fall within the diatonic scale of that inferred key. As shown in Figures 5 and 6, we found that the key adherence was stronger in the baseline model rather than the MTL model. This was not an intended outcome.
           </p>
           <div class="figures-row">
             <figure>
               <img src="./images/key_adherence_baseline_ss.png" alt="Key adherence distribution - baseline model" />
-              <figcaption>Baseline model key adherence distribution.</figcaption>
+              <figcaption><strong>Figure 5:</strong> Baseline model key adherence distribution.</figcaption>
             </figure>
             <figure>
               <img src="./images/key_adherence_new_ss.png" alt="Key adherence distribution - music theory-based loss model" />
-              <figcaption>MTL model key adherence distribution.</figcaption>
+              <figcaption><strong>Figure 6:</strong> MTL model key adherence distribution.</figcaption>
             </figure>
           </div>
         </section>
