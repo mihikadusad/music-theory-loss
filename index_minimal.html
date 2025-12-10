@@ -124,6 +124,27 @@
         margin-top: 8px;
       }
 
+      .figures-row {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        align-items: flex-start;
+        margin: 24px 0;
+        flex-wrap: wrap;
+      }
+
+      .figures-row figure {
+        flex: 1 1 0;
+        min-width: 280px;
+        margin: 0;
+      }
+
+      @media (max-width: 640px) {
+        .figures-row {
+          flex-direction: column;
+        }
+      }
+
       .equation {
         margin: 16px 0;
         padding: 12px 14px;
@@ -282,6 +303,7 @@
             <li><a href="#introduction-title">Introduction</a></li>
             <li><a href="#background-title">Background &amp; Related Work</a></li>
             <li><a href="#methodology-title">Methodology &amp; Experiments</a></li>
+            <li><a href="#training-title">Training Progress</a></li>
             <li><a href="#results-title">Results &amp; Analysis</a></li>
             <li><a href="#conclusion-title">Conclusions</a></li>
             <li><a href="#references-title">References</a></li>
@@ -518,6 +540,23 @@
           <p>
             This gives us a 12-dimensional distribution over pitch classes for each track and time step, which we use in both components of the Music Theory Loss.
           </p>
+        </section>
+
+        <section aria-labelledby="training-title">
+          <h2 id="training-title">Training Progress</h2>
+          <p>
+            The following plots show the training and validation loss curves for both the baseline GETMusic model and our Music Theory Loss variant over 50 epochs.
+          </p>
+          <div class="figures-row">
+            <figure>
+              <img src="./images/baseline_loss_graph.png" alt="Training and Validation Loss per Epoch - Baseline Model">
+              <figcaption>Baseline GETMusic Model</figcaption>
+            </figure>
+            <figure>
+              <img src="./images/modified_loss_graph.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
+              <figcaption>Music Theory Loss Model</figcaption>
+            </figure>
+          </div>
         </section>
 
         <section aria-labelledby="results-title">

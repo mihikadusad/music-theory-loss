@@ -625,20 +625,11 @@ We seek to build upon the GETMusic architecture by incorporating an explicit, mu
   </p>
 </section>
 
-<!-- = Choosing GETMusic as a baseline: MIDI score to image representation = -->
+<!-- = Choosing GETMusic as a Baseline = -->
 <section id="getmusic-baseline" class="content-section">
-  <h2>Choosing GETMusic as a baseline: MIDI score to image representation</h2>
+  <h2>Choosing GETMusic as a Baseline</h2>
   <p>
-    GETMusic combines a 2D symbolic representation with diffusion-based generation, bridging the gap between classical 2D harmony models and modern deep generative architectures. Rather than representing MIDI as a sequence of events, GETMusic rasterizes symbolic music into a pitch × time grid representation known as GETScore. This creates a multi-channel “image” where horizontal continuity corresponds to melodic flow and vertical stacks correspond to chords or polyphonic textures.
-  </p>
-  <p>
-    GETMusic applies a discrete diffusion model, GETDiff, to the GETScore representation to progressively reconstruct clean symbolic tracks from masked, corrupted inputs. The denoiser is implemented as a transformer with RoFormer layers: the model embeds the 2D GETScore grid (tracks arranged vertically, time units horizontally, with separate rows for pitch and duration per track), adds learnable condition flags that indicate which tokens are sources/targets/ignored, projects into a model dimension, and then feeds the sequence through 12 RoFormer layers followed by a classification head over the token vocabulary.
-  </p>
-  <p>
-    In the forward (diffusion) process, target-track tokens are iteratively corrupted by transitioning them toward a special mask token according to a categorical Markov chain, while source-track tokens are kept as ground truth and uninvolved tracks are filled with a special empty token that does not diffuse. In the denoising process, at each timestep GETDiff predicts the clean token distribution for all positions non-autoregressively, i.e., it generates all tokens in parallel conditioned on the current noisy GETScore, the source tracks, and condition flags; after each reverse step, source tracks are reset to their ground truth values and uninvolved tracks are re-emptied.
-  </p>
-  <p>
-    By randomly sampling source and target tracks during training, the same model can handle any source-target combination without retraining. In this case, there are tracks for lead melody, piano, guitar, strings, bass, and drums. GETScore’s vertically stacked, temporally aligned tracks preserve interdependencies among simultaneous notes within and across tracks, so GETDiff always denoises in a space where track separations and time alignment are explicit.
+    GETMusic provides a structured 2D symbolic representation (GETScore) where tracks are vertically stacked and time flows horizontally, forming an image-like grid that naturally encodes harmony and polyphony. A discrete diffusion model, GETDiff, denoises corrupted versions of this grid using a RoFormer-based transformer. Condition flags mark which tracks are provided as input and which must be generated, allowing the same model to perform arbitrary source→target track generation. During training, source tracks remain fixed, target tracks diffuse toward a mask token, and uninvolved tracks are filled with an empty token.
   </p>
 </section>
 
@@ -646,12 +637,15 @@ We seek to build upon the GETMusic architecture by incorporating an explicit, mu
 <section id="architectural-limitations" class="content-section">
   <h2>Architectural limitations</h2>
   <p>
-    GETScore and GETDiff together introduce a stronger structural bias than standard sequence-based models: tracks are explicitly separated yet temporally aligned, and within-track simultaneity is compacted into compound pitch tokens derived from real data. However, from an optimization perspective, GETMusic is still trained with a generic discrete diffusion objective over tokens: the loss is a variational lower bound with categorical transitions and an additional x₀-parameterization term, effectively encouraging the model to reconstruct the original GETScore tokens from noisy versions.
+    Although GETMusic introduces a helpful structural bias—explicit tracks, time alignment, and compound pitch tokens—the diffusion objective itself is entirely generic. It simply learns to reconstruct clean tokens from noisy ones and contains no explicit music-theoretic constraints: no chord plausibility, harmonic consistency, or voice-leading structure is encoded in the loss. These properties must emerge purely from data, which is challenging given the large vocabulary and 100-step diffusion process. The original GETMusic work compensates with a massive, carefully curated dataset (~138k GETScores), but reproducing such scale is impractical for most.
   </p>
+</section>
+
+<!-- = Motivation for our approach = -->
+<section id="motivation" class="content-section">
+  <h2>Motivation for our approach</h2>
   <p>
-    Crucially, this objective does not encode any explicit music-theoretic constraints. In particular, GETMusic does not directly model or penalize chord plausibility or spacing (beyond what is implicit in the data), or stylistic consistency of harmony or voice leading. Harmony and voice leading are therefore emergent properties that the model must infer implicitly from the training corpus, rather than being enforced by the loss. This interacts with the inherent data demands of diffusion: GETDiff is trained with 100 denoising steps over a large vocabulary (11,883 tokens) and a 2D multi-track grid, so learning robust harmonic behavior requires substantial coverage of stylistic and structural patterns. In practice, the authors mitigate this by crawling 1.56M MIDI files from MuseScore and constructing 137,812 GETScores (approximately 2,800 hours worth) after strict cleaning and preprocessing, but assembling such a dataset and pipeline is nontrivial for the average person.
-  </p>
-    These factors motivate our approach: rather than relying solely on large-scale data and a generic categorical diffusion objective to “discover” harmonic structure, we introduce music-theory-informed regularization terms that explicitly favor vertically coherent harmony within the GETMusic framework.
+    Because GETMusic relies on data-driven learning rather than explicit musical structure, we introduce music-theory-informed regularizers that bias the model toward harmonically coherent vertical textures, improving chord structure without requiring a massive training corpus.
   </p>
 </section>
 
@@ -1326,6 +1320,23 @@ In addition to training-time regularization, we applied strict logic masking dur
 By combining GETMusic’s 2D GETScore representation with our Music Theory Loss, we obtain a symbolic generator capable of learning coherent polyphony from a fraction of the data typically required for such tasks. In the context established by our Introduction and Related Work, these experiments demonstrate that explicitly encoding vertical harmonic constraints into the objective function can bridge the gap between architectures that merely <em>represent</em> 2D structure and models whose training signals actively reward music-theoretic correctness.
 </p>
 
+</section>
+
+<section id="training-loss" class="content-section">
+  <h2>Training Progress</h2>
+  <p>
+    The following plots show the training and validation loss curves for both the baseline GETMusic model and our Music Theory Loss variant over 50 epochs.
+  </p>
+  <div class="getmusic-figures-row">
+    <figure class="getmusic-figure">
+      <img src="./images/train_val_loss_baseline.png" alt="Training and Validation Loss per Epoch - Baseline Model">
+      <figcaption>Baseline GETMusic Model</figcaption>
+    </figure>
+    <figure class="getmusic-figure">
+      <img src="./images/train_val_loss_mtl.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
+      <figcaption>Music Theory Loss Model</figcaption>
+    </figure>
+  </div>
 </section>
 
 <section id="results" class="content-section">
