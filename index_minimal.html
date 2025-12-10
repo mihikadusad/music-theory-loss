@@ -146,6 +146,16 @@
         font-size: 17px;
       }
 
+      ul, ol {
+        margin: 0 0 16px;
+        padding-left: 24px;
+      }
+
+      li {
+        margin-bottom: 8px;
+        font-size: 17px;
+      }
+
       img {
         display: block;
         margin: 0 auto;
@@ -391,6 +401,10 @@
           <p>
             Most current systems represent MIDIs as a single sequence of note events, forcing the model to implicitly discover 2D structure — melodic continuity, chord consistency, and voice independence — from flattened data. Despite improvements in tokenization schemes, these models often struggle to maintain stable voice lines or valid harmonic textures. In reality, polyphonic music is inherently two-dimensional: the horizontal axis reflects how melodies evolve over time, while the vertical axis captures the harmony formed by notes sounding together at each moment. Flattening this grid into a 1D sequence obscures both dimensions, making it significantly harder for models to learn coherent melodic motion and consistent chordal structure. One framework developed by Microsoft research, GETMusic [3], addresses this issue by converting MIDI inputs into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
           </p>
+          <figure>
+            <img src="./images/midi_demo.png" alt="MIDI demonstration showing 2D representation" />
+            <figcaption><strong>Figure 1:</strong> MIDI demonstration showing piano roll representation. Note the distinction between audio waves and symbolic music. </figcaption>
+          </figure>
           <p>
             We seek to build upon the GETMusic architecture by incorporating an explicit, music-theory-informed loss regularization term into the GETMusic framework to more reliably enforce vertical harmonic constraints. By aligning the objective function with known principles of polyphonic writing, we strengthen the inductive biases already present in GETMusic’s 2D representation and reduce the dependence on massive curated datasets. We aim to produce more coherent polyphonic outcomes, especially when training resources or datasets are limited.
           </p>
@@ -609,15 +623,15 @@
           <div class="figures-row">
             <figure>
               <img src="./images/baseline_loss_graph.png" alt="Training and Validation Loss per Epoch - Baseline Model">
-              <figcaption><strong>Figure 1:</strong> Baseline GETMusic Model</figcaption>
+              <figcaption><strong>Figure 2:</strong> Baseline GETMusic Model</figcaption>
             </figure>
             <figure>
               <img src="./images/modified_loss_graph.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
-              <figcaption><strong>Figure 2:</strong> MTL Model</figcaption>
+              <figcaption><strong>Figure 3:</strong> MTL Model</figcaption>
             </figure>
           </div>
           <p>
-            As can be seen in Figures 1 and 2, the baseline GETMusic model converges much faster than the MTL model, which is likely due to an overfit on limited training data. 
+            As can be seen in Figures 2 and 3, the baseline GETMusic model converges much faster than the MTL model, which is likely due to an overfit on limited training data. 
           </p>
         </section>
 
@@ -659,29 +673,29 @@
             We also wanted to quantitatively assess the differences in the model outputs. We ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
           </p>
           <p>
-            As can be seen in Figures 3 and 4, the music theory-based loss function creates a higher frequency of perfect intervals (unison, perfect fourth, perfect fifth) as well as major and minor thirds. On the other hand, the baseline generated a more diverse spread of intervals. This makes sense given our loss function; the key adherence loss in particular emphasizes maintaining regular intervals between adjacent notes.
+            As can be seen in Figures 4 and 5, the music theory-based loss function creates a higher frequency of perfect intervals (unison, perfect fourth, perfect fifth) as well as major and minor thirds. On the other hand, the baseline generated a more diverse spread of intervals. This makes sense given our loss function; the key adherence loss in particular emphasizes maintaining regular intervals between adjacent notes.
           </p>
           <div class="figures-row">
             <figure>
               <img src="./images/interval_freq_baseline.png" alt="Interval frequency distribution - baseline model" />
-              <figcaption><strong>Figure 3:</strong> Baseline model interval frequency distribution.</figcaption>
+              <figcaption><strong>Figure 4:</strong> Baseline model interval frequency distribution.</figcaption>
             </figure>
             <figure>
               <img src="./images/interval_freq_new.png" alt="Interval frequency distribution - music theory-based loss model" />
-              <figcaption><strong>Figure 4:</strong> MTL model interval frequency distribution.</figcaption>
+              <figcaption><strong>Figure 5:</strong> MTL model interval frequency distribution.</figcaption>
             </figure>
           </div>
           <p>
-            We also looked at the distribution of key adherence per piece. We inferred the global key of a MIDI piece by selecting the major or minor key whose rotated Krumhansl–Schmuckler profile - a fixed distribution for the number of occurrences of each note in a specific key - best matched the piece's pitch-class histogram. Key adherence was then computed as the proportion of all notes whose pitch classes fall within the diatonic scale of that inferred key. As shown in Figures 5 and 6, we found that the key adherence was stronger in the baseline model rather than the MTL model. This was not an intended outcome.
+            We also looked at the distribution of key adherence per piece. We inferred the global key of a MIDI piece by selecting the major or minor key whose rotated Krumhansl–Schmuckler profile - a fixed distribution for the number of occurrences of each note in a specific key - best matched the piece's pitch-class histogram. Key adherence was then computed as the proportion of all notes whose pitch classes fall within the diatonic scale of that inferred key. As shown in Figures 6 and 7, we found that the key adherence was stronger in the baseline model rather than the MTL model. This was not an intended outcome.
           </p>
           <div class="figures-row">
             <figure>
               <img src="./images/key_adherence_baseline_ss.png" alt="Key adherence distribution - baseline model" />
-              <figcaption><strong>Figure 5:</strong> Baseline model key adherence distribution.</figcaption>
+              <figcaption><strong>Figure 6:</strong> Baseline model key adherence distribution.</figcaption>
             </figure>
             <figure>
               <img src="./images/key_adherence_new_ss.png" alt="Key adherence distribution - music theory-based loss model" />
-              <figcaption><strong>Figure 6:</strong> MTL model key adherence distribution.</figcaption>
+              <figcaption><strong>Figure 7:</strong> MTL model key adherence distribution.</figcaption>
             </figure>
           </div>
         </section>
