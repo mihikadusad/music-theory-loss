@@ -1342,6 +1342,9 @@ By combining GETMusic’s 2D GETScore representation with our Music Theory Loss,
 <section id="results" class="content-section">
   <h2>Results &amp; Analysis</h2>
   <p>
+	Once both models were trained, we ran inference on a test set of 50 MIDIs. In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We collected the audio samples from both and ran quantitative and qualitative evaluation metrics on the 50 outputs from each model. These metrics are discussed in further detail below.
+  </p>
+  <p>
     In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We ran inference on 50 tracks from Slakh2100's cleaned test set.
   </p>
   <p>

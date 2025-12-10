@@ -21,30 +21,6 @@
         position: relative;
       }
 
-      /* Floating musical notes background, adapted from the main page */
-      html::before {
-        content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
-        position: fixed;
-        top: 8%;
-        left: -40%;
-        width: 260%;
-        pointer-events: none;
-        font-size: 48px;
-        color: rgba(0, 0, 0, 0.12);
-        white-space: nowrap;
-        z-index: 0;
-        animation: float-notes-1 45s linear infinite;
-      }
-
-      @keyframes float-notes-1 {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(40%);
-        }
-      }
-
       body {
         margin: 0;
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
@@ -71,6 +47,32 @@
         margin-bottom: 40px;
         border-bottom: 1px solid var(--border);
         padding-bottom: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Floating musical notes confined to the header/title area */
+      header::before {
+        content: "♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬ ♪ ♫ ♩ ♬";
+        position: absolute;
+        top: 55%;
+        left: -40%;
+        width: 260%;
+        pointer-events: none;
+        font-size: 48px;
+        color: rgba(0, 0, 0, 0.12);
+        white-space: nowrap;
+        z-index: -1;
+        animation: float-notes-1 45s linear infinite;
+      }
+
+      @keyframes float-notes-1 {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(40%);
+        }
       }
 
       .kicker {
@@ -98,7 +100,20 @@
 
       h2 {
         margin: 36px 0 12px;
-        font-size: 22px;
+        font-size: 18px; /* non-outline section headings (e.g., Training Progress) */
+      }
+
+      /* Larger style and music note icon for outline-linked sections */
+      h2.toc-linked {
+        font-size: 24px; /* key sections listed in the outline */
+      }
+
+      h2.toc-linked::before {
+        content: "♪";
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 0.95em;
+        color: #000000;
       }
 
       p {
@@ -303,7 +318,6 @@
             <li><a href="#introduction-title">Introduction</a></li>
             <li><a href="#background-title">Background &amp; Related Work</a></li>
             <li><a href="#methodology-title">Methodology &amp; Experiments</a></li>
-            <li><a href="#training-title">Training Progress</a></li>
             <li><a href="#results-title">Results &amp; Analysis</a></li>
             <li><a href="#conclusion-title">Conclusions</a></li>
             <li><a href="#references-title">References</a></li>
@@ -317,16 +331,16 @@
           <h1>Music-Theory Informed Loss for Polyphonic MIDI Generation with Transformer Diffusion Models</h1>
           <p class="meta">
             <span style="font-weight:500;">Authors:</span>
-            <a href="https://github.com/mihikadusad">Mihika Dusad</a>
+            <a href="https://github.com/mihikadusad"><strong>Mihika Dusad</strong></a>
             ·
-            <a href="https://github.com/victoriaxhu">Victoria Hu</a>
+            <a href="https://github.com/victoriaxhu"><strong>Victoria Hu</strong></a>
           </p>
         </header>
 
         <section aria-labelledby="introduction-title">
-          <h2 id="introduction-title">Introduction</h2>
+          <h2 id="introduction-title" class="toc-linked">Introduction</h2>
           <p>
-            AI-guided audio generation efforts have become increasingly popular, both in research and in industry [https://arxiv.org/abs/2406.00146, https://suno.com/home]. However, there is a key distinction between training models to generate pure audio and compose music. The process of composing true playable pieces -- consisting of notes, rhythms, instruments, chords -- is referred to as symbolic music generation. For symbolic music generation, we train models to work with and generate MIDI (Musical Instrument Digital Interface) files, a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements.
+            AI-guided audio generation efforts have become increasingly popular, both in research and in industry [1, 2]. However, there is a key distinction between training models to generate pure audio and compose music. The process of composing true playable pieces -- consisting of notes, rhythms, instruments, chords -- is referred to as symbolic music generation. For symbolic music generation, we train models to work with and generate MIDI (Musical Instrument Digital Interface) files, a digital score format that encodes musical events such as pitch, duration, timing, and instrument choice. Symbolic generation often focuses on polyphonic music, where multiple notes or musical lines sound simultaneously, such as in piano pieces, string quartets, or multi-track arrangements.
           </p>
           <p>
             Most current systems represent MIDIs as a single sequence of note events, forcing the model to implicitly discover 2D structure — melodic continuity, chord consistency, and voice independence — from flattened data. Despite improvements in tokenization schemes, these models often struggle to maintain stable voice lines or valid harmonic textures. In reality, polyphonic music is inherently two-dimensional: the horizontal axis reflects how melodies evolve over time, while the vertical axis captures the harmony formed by notes sounding together at each moment. Flattening this grid into a 1D sequence obscures both dimensions, making it significantly harder for models to learn coherent melodic motion and consistent chordal structure. One framework developed by Microsoft research, GETMusic, addresses this issue by converting MIDI inputs into a 2D track–time image-like representation, enabling a diffusion-based transformer to model local and global musical patterns directly in two dimensions. This representation introduces a stronger inductive bias than single-stream event models, since vertical and horizontal relationships are spatially explicit rather than reconstructed from a token sequence. However, harmony in GETMusic remains an emergent property: the diffusion objective is a generic reconstruction loss that does not encode any explicit music-theoretic principles. As a result, GETMusic remains heavily dependent on extremely large MIDI datasets, and the original authors invested substantial effort in crawling and cleaning thousands of hours of symbolic music to obtain sufficient training data.
@@ -337,24 +351,24 @@
         </section>
 
         <section aria-labelledby="background-title">
-          <h2 id="background-title">Background &amp; Related Work</h2>
+          <h2 id="background-title" class="toc-linked">Background &amp; Related Work</h2>
 
           <h3>Sequence-based symbolic models</h3>
           <p>
-            Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures (Boulanger-Lewandowski et al., 2012)[1]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. In 2018, the transformer architecture was applied to music for the first time (Huang et al., 2018)[2], introducing relative positional self-attention for long-range structure, but encoding all notes—across hands or tracks—as a single 1D event stream. Here, vertical relationships (which notes sound together) were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
+            Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures [3]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. In 2018, the transformer architecture was applied to music for the first time [4], introducing relative positional self-attention for long-range structure, but encoding all notes—across hands or tracks—as a single 1D event stream. Here, vertical relationships (which notes sound together) were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
           </p>
           <p>
             Some other examples of modern symbolic music generators that interpret musical input as a single stream include:
           </p>
           <ul>
             <li>
-              <strong>Compound Word Transformer (CP-Transformer) (Hsiao et al., 2021)</strong>[3]: Groups attributes of a single note (pitch, duration, velocity, instrument) into compound tokens, shortening sequences and slightly tightening intra-note structure, but the representation remains a flat stream of notes.
+              <strong>Compound Word Transformer (CP-Transformer)</strong>[5]: Groups attributes of a single note (pitch, duration, velocity, instrument) into compound tokens, shortening sequences and slightly tightening intra-note structure, but the representation remains a flat stream of notes.
             </li>
             <li>
-              <strong>PopMAG / MuMIDI (Ren et al., 2020)</strong>[4]: Proposes a multi-track sequence representation where track identity and chord information are encoded as token attributes. This allows multi-track accompaniment generation but further lengthens the sequence and still interleaves tracks in one stream.
+              <strong>PopMAG / MuMIDI</strong>[6]: Proposes a multi-track sequence representation where track identity and chord information are encoded as token attributes. This allows multi-track accompaniment generation but further lengthens the sequence and still interleaves tracks in one stream.
             </li>
             <li>
-              <strong>MMM (Multi-Track Music Machine), MTMT (Multitrack Music Transformer), and Nested Music Transformer</strong> (Ens &amp; Pasquier, 2020; Dong et al., 2023; Ryu et al., 2024)[5–7]: Encode multi-track events as tuples (instrument, pitch, duration, etc.) that are then fully flattened into a 1D sequence.
+              <strong>MMM (Multi-Track Music Machine), MTMT (Multitrack Music Transformer), and Nested Music Transformer</strong>[7–9]: Encode multi-track events as tuples (instrument, pitch, duration, etc.) that are then fully flattened into a 1D sequence.
             </li>
           </ul>
           <p>
@@ -367,19 +381,18 @@
           </p>
           <ul>
             <li>
-              <strong>MuseGAN (Dong et al., 2017/2018)</strong>[8]: Generates multi-track piano-roll tensors, where each bar is represented as a binary matrix of size (time steps × pitches × tracks). Convolutional GANs operate directly on this 2D (plus channels) structure, so vertical chords and cross-track combinations are local patterns in an “image” rather than dispersed tokens, yielding strong local harmonic textures but typically limited to bar-level phrases with GAN training instabilities and weak global structure.
+              <strong>MuseGAN</strong>[10]: Generates multi-track piano-roll tensors, where each bar is represented as a binary matrix of size (time steps × pitches × tracks). Convolutional GANs operate directly on this 2D (plus channels) structure, so vertical chords and cross-track combinations are local patterns in an “image” rather than dispersed tokens, yielding strong local harmonic textures but typically limited to bar-level phrases with GAN training instabilities and weak global structure.
+            </li>
+            <li> (Yang et al., 2017)</strong>[11]: Uses convolutional GANs to generate melody one bar at a time in piano-roll form, conditioned on both 1D sequences (chords) and 2D contexts (previous bars). While the vertical axis explicitly encodes chord content, the objective is still a generic adversarial loss over images rather than a music-theoretic notion of harmony.
             </li>
             <li>
-              <strong>MidiNet (Yang et al., 2017)</strong>[9]: Uses convolutional GANs to generate melody one bar at a time in piano-roll form, conditioned on both 1D sequences (chords) and 2D contexts (previous bars). While the vertical axis explicitly encodes chord content, the objective is still a generic adversarial loss over images rather than a music-theoretic notion of harmony.
-            </li>
-            <li>
-              <strong>DiffRoll (Cheuk et al., 2022)</strong>[10]: Employs diffusion to generate piano-rolls conditioned on audio spectrograms for automatic music transcription. The model denoises a 2D time-pitch grid of symbolic events from Gaussian noise, demonstrating that diffusion in a piano-roll space can capture realistic local harmonic patterns.
+              <strong>DiffRoll</strong>[12]: Employs diffusion to generate piano-rolls conditioned on audio spectrograms for automatic music transcription. The model denoises a 2D time-pitch grid of symbolic events from Gaussian noise, demonstrating that diffusion in a piano-roll space can capture realistic local harmonic patterns.
             </li>
           </ul>
 
           <h3>GETMusic and 2D token grids</h3>
           <p>
-            Architecturally, our work is closest to GETMusic (Lv et al., 2023)[11], which positions itself between transformer sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
+            Architecturally, our work is closest to GETMusic [13], which positions itself between transformer sequence-based and image-based methods. GETMusic introduces GETScore, a 2D arrangement of discrete note tokens where tracks are stacked vertically and progress horizontally over time, with each track represented by two rows (pitch and duration). Compound pitch tokens merge simultaneous notes within a track, preserving intra-track chords while keeping the grid compact.
           </p>
           <p>
             A discrete diffusion model, GETDiff, denoises masked target tracks conditioned on source tracks in a non-autoregressive fashion, enabling flexible any-track-to-any-track generation and zero-shot infilling. Compared to piano-roll GANs/diffusion, GETScore avoids extremely large and sparse images while still making both horizontal continuity and vertical cross-track relationships spatially explicit. Compared to 1D event models such as PopMAG, it eliminates track interleaving: tracks are temporally aligned in a score-like grid rather than interwoven in a single stream.
@@ -395,7 +408,7 @@
         </section>
 
         <section aria-labelledby="methodology-title">
-          <h2 id="methodology-title">Methodology &amp; Experiments</h2>
+          <h2 id="methodology-title" class="toc-linked">Methodology &amp; Experiments</h2>
 
           <p>
             To validate our hypothesis that explicit music-theoretic constraints can improve polyphonic generation—particularly in data-constrained environments—we implemented our proposed regularization framework on top of the GETMusic architecture. Our goal is to determine whether injecting domain-specific inductive biases into a diffusion-based symbolic music generator enables coherent harmonic structure even when trained on only a few hundred examples. We therefore conducted controlled experiments comparing the original GETMusic loss (GETM) against our proposed Music Theory Loss (MTL), using identical training conditions and evaluation metrics.
@@ -545,7 +558,7 @@
         <section aria-labelledby="training-title">
           <h2 id="training-title">Training Progress</h2>
           <p>
-            The following plots show the training and validation loss curves for both the baseline GETMusic model and our Music Theory Loss variant over 50 epochs.
+            We trained both our modified architecture and the baseline MIDI generation model on a preprocessed collection of 292 MIDI files from slakh-2100, resulting in 1650 trainable segments of audio. We ran 50 epochs with 546 iterations per epoch. We also made use of a validation set during training. The following plots show the training and validation loss curves for both the baseline GETMusic model and our Music Theory Loss variant over the course of training.
           </p>
           <div class="figures-row">
             <figure>
@@ -554,13 +567,16 @@
             </figure>
             <figure>
               <img src="./images/modified_loss_graph.png" alt="Training and Validation Loss per Epoch - Music Theory Loss Model">
-              <figcaption>Music Theory Loss Model</figcaption>
+              <figcaption>MTL Model</figcaption>
             </figure>
           </div>
+          <p>
+            As can be seen in Figure X, the baseline GETMusic model converges much faster than the MTL model, which is likely due to an overfit on limited training data. 
+          </p>
         </section>
 
         <section aria-labelledby="results-title">
-          <h2 id="results-title">Results &amp; Analysis</h2>
+          <h2 id="results-title" class="toc-linked">Results &amp; Analysis</h2>
           <p>
             In our experiments, both the baseline and modified models were prompted to generate a piano accompaniment track conditioned on the fixed lead-voice track. This setup isolates the effect of our changes on harmonic behavior, since the melodic line remains constant across models. We ran inference on 50 tracks from Slakh2100's cleaned test set.
           </p>
@@ -570,20 +586,63 @@
           <p>
             To visualize these differences, we computed frequency distributions of all intervals (unisons, thirds, fifths, etc.) for both the baseline and test models, included below.
           </p>
+          <h3>Qualitative</h3>
+          <p>
+            We provide sample MIDIs that were generated by the original model and our modified model.
+          </p>
+          <p>
+            <strong>Original loss:</strong><br />
+            &gt;&gt; snippet 1
+          </p>
+          <p>
+            <strong>Music theory-based loss:</strong><br />
+            &gt;&gt; snippet 2
+          </p>
+          <p>
+            Here, we can see that the model using a music theory-based loss function does a better job of maintaining…[yap].
+          </p>
+
+          <h3>Quantitative</h3>
+          <p>
+            We also wanted to quantitatively assess the differences in the model outputs. We ran an interval-analysis script that compares the piano part to the lead voice at each timestep and records the music-theoretic intervals formed between the two. This allowed us to quantify how often each interval class appears and whether the model shifts toward more consonant, stylistically appropriate harmonies.
+          </p>
+          <p>
+            As can be seen in Figure X, the music theory-based loss function creates a higher frequency of perfect intervals (unison, perfect fourth, perfect fifth) as well as major and minor thirds. On the other hand, the baseline generated a more diverse spread of intervals. This makes sense given our loss function; the key adherence loss in particular emphasizes maintaining regular intervals between adjacent notes.
+          </p>
+          <p>
+            <em>[INSERT SIDE BY SIDE BAR GRAPHS]</em>
+          </p>
+          <p>
+            We also looked at the distribution of key adherence per piece. We inferred the global key of a MIDI piece by selecting the major or minor key whose rotated Krumhansl–Schmuckler profile (a fixed distribution) best matched the piece’s pitch-class histogram. Key adherence was then computed as the proportion of all notes whose pitch classes fall within the diatonic scale of that inferred key. As shown in Figure X, we found that the key adherence was stronger in the baseline model rather than the MTL model. This was not an intended outcome.
+          </p>
+          <p>
+            <em>[INSERT SIDE BY SIDE BAR GRAPHS]</em>
+          </p>
         </section>
 
         <section aria-labelledby="conclusion-title">
-          <h2 id="conclusion-title">Conclusions</h2>
+          <h2 id="conclusion-title" class="toc-linked">Conclusions</h2>
           <p>
             Our preliminary experiments suggest that explicitly encoding simple harmonic priors into the loss can improve symbolic polyphonic generation in low-data settings, while remaining compatible with the existing GETMusic architecture.
           </p>
         </section>
 
         <section aria-labelledby="references-title" class="references">
-          <h2 id="references-title">References</h2>
+          <h2 id="references-title" class="toc-linked">References</h2>
           <ol>
             <li>
-              [1] N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
+              [1] H. Wang, Y.-N. Chen, Z. Huang, et al.
+              <em>MusicGen: Generating High-Fidelity Music from Text.</em>
+              arXiv:2406.00146, 2024.
+              Available at: <a href="https://arxiv.org/abs/2406.00146">https://arxiv.org/abs/2406.00146</a>.
+            </li>
+            <li>
+              [2] Suno AI.
+              <em>Suno: Text-to-Music Generation Platform.</em>
+              Available at: <a href="https://suno.com/home">https://suno.com/home</a>.
+            </li>
+            <li>
+              [3] N. Boulanger-Lewandowski, Y. Bengio, and P. Vincent.
               <em>
                 Modeling Temporal Dependencies in High-Dimensional Sequences:
                 Application to Polyphonic Music Generation and Transcription.
@@ -592,61 +651,61 @@
               arXiv:1206.6392.
             </li>
             <li>
-              [2] C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
+              [4] C.-Z. A. Huang, A. Vaswani, J. Uszkoreit, et al.
               <em>Music Transformer: Generating Music with Long-Term Structure.</em>
               In <em>International Conference on Learning Representations (ICLR)</em>, 2019.
               arXiv:1809.04281.
             </li>
             <li>
-              [3] W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
+              [5] W.-Y. Hsiao, J.-Y. Liu, Y.-H. Yang, and I. Liao.
               <em>Compound Word Transformer: Learning to Compose Full-Song Music over Dynamic Directed Hypergraphs.</em>
               In <em>AAAI Conference on Artificial Intelligence</em>, 2021.
               arXiv:2101.02402.
             </li>
             <li>
-              [4] Y. Ren, J. He, X. Tan, et al.
+              [6] Y. Ren, J. He, X. Tan, et al.
               <em>PopMAG: Pop Music Accompaniment Generation.</em>
               In <em>Proceedings of the 28th ACM International Conference on Multimedia</em>, 2020.
               arXiv:2008.07703.
             </li>
             <li>
-              [5] J. Ens and P. Pasquier.
+              [7] J. Ens and P. Pasquier.
               <em>MMM: Exploring Conditional Multi-Track Music Generation with the Transformer.</em>
               In <em>Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)</em>, 2020.
               arXiv:2008.06048.
             </li>
             <li>
-              [6] H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
+              [8] H.-W. Dong, K. Chen, S. Dubnov, J. McAuley, and T. Berg-Kirkpatrick.
               <em>Multitrack Music Transformer: Learning Long-Term Dependencies in Music with Diverse Instruments.</em>
               In <em>ICASSP</em>, 2023.
               arXiv:2207.06983.
             </li>
             <li>
-              [7] K. Ryu, S. Cho, H. Choi, et al.
+              [9] K. Ryu, S. Cho, H. Choi, et al.
               <em>Nested Music Transformer: Sequentially Decoding Compound Tokens in Symbolic Music.</em>
               In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2024.
               arXiv:2408.01180.
             </li>
             <li>
-              [8] H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
+              [10] H.-W. Dong, W.-Y. Hsiao, L.-C. Yang, and Y.-H. Yang.
               <em>MuseGAN: Multi-Track Sequential Generative Adversarial Networks for Symbolic Music Generation and Accompaniment.</em>
               In <em>Proceedings of the AAAI Conference on Artificial Intelligence</em>, 2018.
               arXiv:1709.06298.
             </li>
             <li>
-              [9] L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
+              [11] L.-C. Yang, S.-Y. Chou, and Y.-H. Yang.
               <em>MidiNet: A Convolutional Generative Adversarial Network for Symbolic-Domain Music Generation.</em>
               In <em>Proceedings of the International Society for Music Information Retrieval Conference (ISMIR)</em>, 2017.
               arXiv:1703.10847.
             </li>
             <li>
-              [10] K. W. Cheuk, R. Sawata, T. Uesaka, et al.
+              [12] K. W. Cheuk, R. Sawata, T. Uesaka, et al.
               <em>DiffRoll: Diffusion-based Generative Music Transcription with Unsupervised Pretraining Capability.</em>
               In <em>ICASSP</em>, 2023.
               arXiv:2210.05148.
             </li>
             <li>
-              [11] Z. Lv, Z. Dai, G. Li, et al.
+              [13] Z. Lv, Z. Dai, G. Li, et al.
               <em>GETMusic: Generating Any Music Tracks with a Unified Representation and Diffusion Framework.</em>
               arXiv:2305.10841, 2023.
             </li>
