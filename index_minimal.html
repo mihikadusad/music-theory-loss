@@ -355,7 +355,7 @@
 
           <h3>Sequence-based symbolic models</h3>
           <p>
-            Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures [3]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. When the transformer architecture was applied to music for the first time [4] in 2018, it introduced relative positional self-attention for long-range structure, but encoded all notes—across hands or tracks—as a single 1D event stream. Vertical relationships, i.e. which notes sound together at once, were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
+            Early neural approaches to symbolic music generation modeled MIDI as a time-ordered sequence of events, typically using RNNs to generate monophonic or lightly polyphonic textures [4]. These models struggled to maintain long-range form, independent voices, and consistent harmonic context. When the transformer architecture was applied to music [5] for the first time in 2018, it introduced relative positional self-attention for long-range structure, but encoded all notes—across hands or tracks—as a single 1D event stream. Vertical relationships, i.e. which notes sound together at once, were implied only by co-occurring time indices in the sequence, not by a structural axis. Today, the transformer is the most commonly used architecture for MIDI generation, yet virtually all widely used architectures still rely on flattened 1D event streams, leaving multi-voice structure to be reconstructed implicitly by attention.
           </p>
           <p>
             Some other examples of modern symbolic music generators that interpret musical input as a single stream include:
@@ -605,7 +605,7 @@
             </audio>
           </p>
           <p>
-            In this example, we can see that the model using a music theory-based loss function does a slightly better job of generating a leading melody which maintains coherent vertical harmony. However, given the sparsity of data and difficulty in objectively evaluating something as subjective asmusic, we turn to quantitative metrics.
+            In this example, we can see that the model using a music theory-based loss function does a slightly better job of generating a leading melody which maintains coherent vertical harmony. The music theory-based loss emphasizes the inclusion of more triads like the first G major chord you hear so clearly in the beginning. Some other stylistic differences can be discerned between the two recordings, such as the increased dissonance in the first recording and clashing of multiple tracks and instruments. Our loss function seems able to guide the model to prioritize inter-track harmony through the vertical consonance and key adherence loss components. However, given the sparsity of data and difficulty in objectively evaluating something as subjective asmusic, we turn to quantitative metrics.
           </p>
 
           <h3>Quantitative</h3>
